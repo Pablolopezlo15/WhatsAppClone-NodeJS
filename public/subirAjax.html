@@ -1,0 +1,37 @@
+<html>
+  <head>
+    <title>File Upload with Fetch API</title>
+    <script src="/socket.io/socket.io.js"></script>
+  </head>
+  <body>
+    <form>
+      <input type="file" id="fileInput" name="fileInput">
+      <button type="button" id="uploadButton">Upload</button>
+    </form>
+    <script>
+            const socket = io();
+
+
+      const uploadButton = document.getElementById('uploadButton');
+      const fileInput = document.getElementById('fileInput');
+      const endpoint = 'http://localhost:3000/upload';
+      uploadButton.addEventListener('click', () => {
+        const file = fileInput.files[0];
+        const formData = new FormData();
+        formData.append('fichero', file);
+        fetch(endpoint, {
+          method: 'POST',
+          body: formData
+        })
+        .then(data => {
+          console.log(data);
+          alert('File uploaded successfully!');
+        })
+        .catch(error => {
+          console.error(error);
+          alert('Error uploading file');
+        });
+      });
+    </script>
+  </body>
+</html>

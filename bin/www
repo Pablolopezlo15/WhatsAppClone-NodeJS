@@ -1,0 +1,138 @@
+#!/usr/bin/env node
+const { Server } = require('socket.io');
+
+/**
+ * Module dependencies.
+ */
+
+var app = require('../app');
+var debug = require('debug')('prueba3:server');
+var http = require('http');
+
+/**
+ * Get port from environment and store in Express.
+ */
+
+var port = normalizePort(process.env.PORT || '3000');
+app.set('port', port);
+
+/**
+ * Create HTTP server.
+ */
+
+var server = http.createServer(app);
+const io = new Server(server);
+var users = 0;
+
+io.on('connection', (socket) => {
+  users++;
+  io.emit('entradausuarios', 'nº de usuarios conectados: ' + users);
+  socket.on('disconnect', () => {
+    users--;
+    console.log("Hay " + users +" usuarios conectados");
+
+  });
+  socket.on('mensaje', (msg) => {
+    datosAEnviar = {
+      nick: socket.nick,
+      avatar: socket.avatar,
+      mensaje: msg,
+      archivo: socket.archivo,
+      hora: new Date().toLocaleTimeString()
+    }
+    console.log(datosAEnviar);
+    socket.broadcast.emit('mensaje', datosAEnviar);
+  });
+
+  socket.on('nick', (nick) => {
+    socket.nick = nick;
+    console.log("El usuario " + nick + " se ha conectado");
+    socket.broadcast.emit('nick', nick);
+  });
+
+  socket.on('avatar', (avatar) => {
+    socket.avatar = avatar;
+    console.log("El usuario " + socket.nick + " ha cambiado su avatar a " + avatar );
+    socket.broadcast.emit('avatar', avatar);
+  });
+
+  socket.on('archivoCompartido', (archivo) => { 
+    console.log("Recibo fichero")
+    if (!archivo) {
+      return res.status(400).send('No files were uploaded.');
+    }
+    uploadPath = __dirname + '/public/archivosComp/' + archivo;
+    console.log(archivo);
+    socket.archivo = archivo;
+    socket.broadcast.emit('archivoCompartido', archivo);
+  });
+});
+
+
+/**
+ * Listen on provided port, on all network interfaces.
+ */
+
+server.listen(port);
+server.on('error', onError);
+server.on('listening', onListening);
+
+/**
+ * Normalize a port into a number, string, or false.
+ */
+
+function normalizePort(val) {
+  var port = parseInt(val, 10);
+
+  if (isNaN(port)) {
+    // named pipe
+    return val;
+  }
+
+  if (port >= 0) {
+    // port number
+    return port;
+  }
+
+  return false;
+}
+
+/**
+ * Event listener for HTTP server "error" event.
+ */
+
+function onError(error) {
+  if (error.syscall !== 'listen') {
+    throw error;
+  }
+
+  var bind = typeof port === 'string'
+    ? 'Pipe ' + port
+    : 'Port ' + port;
+
+  // handle specific listen errors with friendly messages
+  switch (error.code) {
+    case 'EACCES':
+      console.error(bind + ' requires elevated privileges');
+      process.exit(1);
+      break;
+    case 'EADDRINUSE':
+      console.error(bind + ' is already in use');
+      process.exit(1);
+      break;
+    default:
+      throw error;
+  }
+}
+
+/**
+ * Event listener for HTTP server "listening" event.
+ */
+
+function onListening() {
+  var addr = server.address();
+  var bind = typeof addr === 'string'
+    ? 'pipe ' + addr
+    : 'port ' + addr.port;
+  debug('Listening on ' + bind);
+}

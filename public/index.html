@@ -1,0 +1,318 @@
+<html>
+
+<head>
+  <title>Express</title>
+  <link rel="stylesheet" href="/stylesheets/style.css">
+  <script src="/socket.io/socket.io.js"></script>
+  <style>
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f0f0f0;
+  margin: 0;
+  padding: 0;
+}
+
+h1 {
+  font-size: 24px;
+  color: #075e54;
+  margin: 20px 0;
+}
+
+h2 {
+  font-size: 18px;
+  color: #128c7e;
+  margin: 10px 0;
+}
+
+.container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.input-group {
+  display: flex;
+  margin-bottom: 10px;
+}
+
+.input-group input[type="text"] {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 16px;
+}
+
+.input-group button {
+  padding: 10px 20px;
+  background-color: #075e54;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.chat-box {
+  background-color: #f5f5f5;
+  border-radius: 5px;
+  padding: 10px;
+  margin-bottom: 20px;
+}
+
+.message {
+  padding: 10px;
+  border-radius: 5px;
+  margin-bottom: 10px;
+}
+
+.enviado {
+  background-color: #dcf8c6;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.recibido {
+  display: flex;
+  flex-direction: column-reverse;
+  justify-content: flex-start;
+  background-color: #fff;
+  border: #075e54 1px solid;
+  border-radius: 5px;
+}
+
+.nick {
+  font-weight: bold;
+  font-size: 10px;
+  margin-bottom: 5px;
+}
+
+.emojis {
+  width: 30px;
+  height: 30px;
+  margin: 5px;
+  cursor: pointer;
+}
+.datos-mensaje {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h1>Chat</h1>
+    <div class="input-group">
+      <input type="text" name="" id="nick" placeholder="Tu nombre">
+      <input type="hidden" name="avatar" id="avatar-input">
+      <p>Avatar</p>
+      <div>
+        <img src="images/avatars/1avatar.svg" alt="" id="avatar" class="avatar">
+        <img src="images/avatars/2avatar.svg" alt="" id="avatar" class="avatar">
+        <img src="images/avatars/3avatar.svg" alt="" id="avatar" class="avatar">
+        <img src="images/avatars/4avatar.svg" alt="" id="avatar" class="avatar">
+        <img src="images/avatars/5avatar.svg" alt="" id="avatar" class="avatar">
+      </div>
+      <button onclick="enviarAvatar()">Enviar Avatar</button>
+      <button onclick="enviarNick()">Enviar Nick</button>
+    </div>
+    <form>
+      <input type="file" id="fileInput" name="fileInput">
+      <button type="button" id="uploadButton">Upload</button>
+    </form>
+    <div class="input-group">
+      <input type="text" id="mensaje" placeholder="Escribe un mensaje">
+      <button onclick="enviar()">Enviar</button>
+    </div>
+  
+    <div class="chat-box">
+      <h2>Emoji</h2>
+      <div>
+        <img src="images/emoticonos/Twemoji_1f600.svg" alt="" id="emoji1" class="emojis">
+        <img src="images/emoticonos/Face blowing a kiss.svg" alt="" id="emoji1" class="emojis">
+        <img src="images/emoticonos/Smiling face with heart-eyes.svg" alt="" id="emoji1" class="emojis">
+        <img src="images/emoticonos/Smiling face with sunglasses.svg" alt="" id="emoji1" class="emojis">
+        <img src="images/emoticonos/Smiling face with horns.svg" alt="" id="emoji1" class="emojis">
+
+      </div>
+  
+      <input type="hidden" id="emoji">
+      <button onclick="enviaremoji()">Enviar emoji</button>
+    </div>
+    
+    <div class="chat-box">
+      <ul id="mensajes"></ul>
+    </div>
+  </div>
+  
+  <script>
+    const socket = io();
+    const messages = document.getElementById('messages');
+
+    function enviar() {
+        const input = document.getElementById('mensaje'); 
+        const listaMensajes = document.getElementById('mensajes');
+        socket.emit('mensaje', input.value);
+
+
+        const nuevoMensaje = document.createElement('li');
+        nuevoMensaje.setAttribute('class', 'enviado');
+        nuevoMensaje.textContent = input.value;
+        listaMensajes.appendChild(nuevoMensaje);
+    
+        input.value = '';
+    }
+
+    function enviaremoji() {
+        const inputemoji = document.getElementById('emoji');
+        const listaMensajes = document.getElementById('mensajes');
+        socket.emit('mensaje', inputemoji.value);
+
+        const nuevoMensaje = document.createElement('li');
+        const nuevoEmoji = document.createElement('img');
+        nuevoEmoji.setAttribute('src', inputemoji.value);
+        nuevoMensaje.appendChild(nuevoEmoji);
+        nuevoMensaje.setAttribute('class', 'enviado');
+        nuevoEmoji.setAttribute('class', 'emojis');
+        listaMensajes.appendChild(nuevoMensaje);
+
+        inputemoji.value = '';
+    }
+
+    const emojis = document.querySelectorAll('.emojis');
+    emojis.forEach(emoji => {
+        emoji.addEventListener('click', () => {
+            const inputemoji = document.getElementById('emoji');
+            inputemoji.value = emoji.src;
+        });
+    });
+
+
+    const input = document.querySelector('input');
+    input.addEventListener('keyup', (e) => {
+        if (e.key === 'Enter') {
+          enviar();
+        }
+    });
+
+    const avatar = document.querySelectorAll('.avatar');
+    avatar.forEach(avatar => {
+        avatar.addEventListener('click', () => {
+            const inputavatar = document.getElementById('avatar-input');
+            inputavatar.value = avatar.src;
+            console.log(inputavatar.value);
+        });
+    });
+
+    function recibir() {
+        const listaMensajes = document.getElementById('mensajes');
+        const mensajeRecibido = document.createElement('li');
+        mensajeRecibido.setAttribute('class', 'recibido');
+
+        socket.on('mensaje', (msg) => {
+          console.log(msg);
+          const mensajeRecibido = document.createElement('li');
+          mensajeRecibido.setAttribute('class', 'recibido');
+
+          const mensaje = document.createElement('p');
+
+          mensaje.textContent = msg.mensaje;
+          
+          mensajeRecibido.appendChild(mensaje);
+
+          const datosMensaje = document.createElement('div');
+          datosMensaje.setAttribute('class', 'datos-mensaje');
+          mensajeRecibido.appendChild(datosMensaje);
+          
+
+          const nick = document.createElement('p');
+          nick.setAttribute('class', 'nick');
+          nick.textContent = msg.nick;
+          datosMensaje.appendChild(nick);
+
+
+          const avatar = document.createElement('img');
+          avatar.setAttribute('src', msg.avatar);
+          avatar.setAttribute('class', 'emojis');
+          datosMensaje.appendChild(avatar);
+
+          const hora = document.createElement('p');
+          hora.textContent = msg.hora;
+          datosMensaje.appendChild(hora);
+
+          const archivo = document.createElement('img');
+          archivo.setAttribute('src', msg.archivo);
+          archivo.textContent = msg.archivo;
+          mensajeRecibido.appendChild(archivo);
+
+          listaMensajes.appendChild(mensajeRecibido);
+        });
+    }
+
+    function enviarNick() {
+        const input = document.getElementById('nick');
+        console.log(input.value);
+        socket.emit('nick', input.value);
+        console.log("Nick asignado: "+ input.value);
+        input.value = '';
+    }
+
+    function enviarAvatar() {
+        const input = document.getElementById('avatar-input');
+        console.log(input.value);
+        socket.emit('avatar', input.value);
+        console.log("Avatar asignado: "+ input.value);
+        input.value = '';
+    }
+
+    const uploadButton = document.getElementById('uploadButton');
+      const fileInput = document.getElementById('fileInput');
+      const endpoint = 'http://localhost:3000/upload';
+      uploadButton.addEventListener('click', () => {
+        const file = fileInput.files[0];
+        const formData = new FormData();
+        formData.append('fichero', file);
+        fetch(endpoint, {
+          method: 'POST',
+          body: formData
+        })
+        .then(data => {
+          console.log(file.name);
+          alert('File uploaded successfully!');
+          socket.emit('archivoCompartido', file.name);
+        })
+        .catch(error => {
+          console.error(error);
+          alert('Error uploading file');
+        });
+      });
+
+    function compartirArchivo() {
+        const input = document.getElementById('fichero');
+        console.log(input.value);
+        socket.emit('archivoCompartido', input.value);
+        console.log("Archivo compartido: "+ input.value);
+        input.value = '';
+    }
+
+    function recibirArchivo(){
+      listaMensajes = document.getElementById('mensajes');
+      const img = document.createElement('img');
+      img.setAttribute('src', 'uploads/' + msg);
+      img.setAttribute('class', 'emojis');
+      listaMensajes.appendChild(img);
+
+    }
+
+    window.onload = () => {
+        recibir();
+    }
+</script>
+</body>
+
+</html>
