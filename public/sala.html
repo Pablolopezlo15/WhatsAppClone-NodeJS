@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>WhatsApp Web</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="./stylesheets/sala.css">
+        <script src="https://kit.fontawesome.com/fd384f8db8.js" crossorigin="anonymous"></script>
+        <script src="/socket.io/socket.io.js"></script>
+    </head>
+    <body>
+
+
+        <div id="login">
+            <input type="text" name="" id="nick" placeholder="Tu nombre">
+            <button onclick="enviarNick()">Enviar Nick</button>
+        </div>
+
+
+
+        <div id="container">
+            <aside id="sideBar">
+                <div id="barraDeFerramentas">
+                    <img src="./img/avatar1.png" class="fotoUsuario" alt="Imagem do avatar 1">
+                    <div class='auxIcon'>
+                        <i class="fas fa-spinner"></i>
+                        <i class="fas fa-comment-alt"></i>
+                        <i class="fas fa-ellipsis-v"></i>
+                    </div>
+                </div>
+                <div id="containerNotification">
+                    <i class="fas fa-bell-slash"></i>
+                    <p id="receberNotification">Receba notificações</p>
+                    <p id="ativarNotification">Ativar notificações na area de trabalho <i class="fas fa-angle-right"></i> </p>
+                </div>
+                <div id="containerPesquisa">
+                    <i id="porcurarContato" class="fas fa-search"></i>
+                    <input type="text" name="search" id="procura" placeholder="Procurar ou começar uma nova conversa">
+                </div>
+                <div id="containerContatos">
+                    <div class="boxContato chatAtivo">
+                        <img src="./img/avatar2.png" alt="Imagem do avatar 2" class="fotoUsuario">
+                        <div class="ifoUsuario" onclick="entrarSala1()">
+                            <p class="nomeUsuario">Sala 1</p>
+                            <p class="previewMenssage">
+                                <i class="fas fa-check-double"></i> 
+                                Oi, tudo bem?
+                            </p>
+                        </div>
+                        <div class="infoMenssage">
+                            <p class="horario">22:40</p>
+                        </div>
+                    </div>
+                    <div class="boxContato">
+                        <img src="./img/avatar3.png" alt="Imagem do avatar 2" class="fotoUsuario">
+                        <div class="ifoUsuario" onclick="entrarSala2()">
+                            <p class="nomeUsuario">Sala 2</p>
+                            <p class="previewMenssage">
+                                Está disponível para um novo emprego?
+                            </p>
+                        </div>
+                        <div class="infoMenssage">
+                            <p class="horario">20:44</p>
+                            <p class="menssagePendente">3</p>
+                        </div>
+                    </div>
+                    <div class="boxContato">
+                        <ul id="lista-usuarios">
+
+                        </ul>
+                    </div>
+                </div>
+            </aside>
+            <main id="chatArea">
+                <nav id="chatNavBar">
+                    <div id="containerContactInfo">
+                        <img src="./img/avatar2.png" alt="Imagem do avatar 2" class="fotoUsuario">
+                        <p class="nomeUsuario">Sala 1</p>
+                    </div>
+                    <ul id="containerFerramentasChat">
+                        <li><i class="fas fa-search"></i></li>
+                        <li><i class="fas fa-paperclip"></i></li>
+                        <li><i class="fas fa-ellipsis-v"></i></li>
+                    </ul>
+                </nav>
+                <div id="containerMenssages">
+                    <div class="bg-image"></div>
+                    <div class="chatMenssages">
+                        <!-- <p class="remetenteMenssage">Oi, tudo bem?</p>
+                        <p class="destinMenssage">Oi, tudo bem?</p> -->
+                        <ul id="mensajes" class="mensajesbox">
+                            
+                        </ul>
+                    </div>
+                </div>
+                <div class="containerEnviarMenssage">
+                    <i class="fas fa-grin"></i>
+                    <input type="text" name="menssage" class="inputMenssage" id="mensaje" placeholder="Escribe un mensaje...">
+                    <i class="fas fa-microphone"></i>
+                    <i class="fas fa-paper-plane" onclick="enviar()"></i>
+
+                </div>
+            </main>
+        </div>
+        <script src="./javascripts/script.js"></script>
+    </body>
+</html>

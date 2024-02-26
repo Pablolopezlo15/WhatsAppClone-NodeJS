@@ -1,0 +1,374 @@
+* {
+    font-family: 'open Sans', sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+ul {
+    list-style: none;
+}
+
+#container {
+    height: 100vh;
+    position: relative;
+}
+
+/* Side Bar */
+#sideBar {
+    width: 410px;
+    height: 100%;
+    display: inline-block;
+    position: relative;
+}
+
+#barraDeFerramentas {
+    width: 100%;
+    height: 60px;
+    background-color: #EEE;
+}
+
+.fotoUsuario {
+    width: 40px;
+    border-radius: 50%;
+    margin: 10px 0 0 15px;
+    background-color: #CCC;
+}
+
+.auxIcon {
+    float: right;
+    height: 60px;
+    line-height: 60px;
+    padding-right: 20px;
+}
+
+.auxIcon i {
+    color: #80868A;
+    font-size: 20px;
+    margin: 0 15px 0 15px;
+    cursor: pointer;
+}
+
+/* Container de Notificações */
+#containerNotification {
+    width: 100%;
+    height: 90px;
+    padding: 23px 0 0 80px;
+    background-color: #9DE1FE;
+    color: #384C56;
+    position: relative;
+    box-sizing: border-box;
+    cursor: pointer;
+}
+
+.fas.fa-bell-slash {
+    width: 45px;
+    height: 45px;
+    text-align: center;
+    line-height: 45px;
+    border-radius: 50%;
+    font-size: 18px;
+    color: #9DE1FE;
+    background-color: #F5FCFF;
+    position: absolute;
+    top: 20px;
+    left: 15px;
+}
+
+#containerNotification .chatMenssages ul li {
+    margin: 0;
+}
+
+#containerNotification #receberNotification {
+    font-size: 15px;
+    margin-bottom: 3px;
+}
+
+#containerNotification #ativarNotification {
+    font-size: 13px;
+}
+
+/* Container de Pesquisa */
+#containerPesquisa {
+    width: 100%;
+    height: 50px;
+    padding: 7.5px 0 0 7.5px;
+    background-color: #F8F8F8;
+    position: relative;
+    color: #BDC1C3;
+    box-sizing: border-box;
+}
+
+#porcurarContato {
+    position: absolute;
+    left: 30px;
+    top: 18px;
+    font-size: 14px;
+}
+
+#procura {
+    border: none;
+    width: 385px;
+    height: 35px;
+    padding-left: 60px;
+    border-radius: 17.5px;
+    background-color: #FFF;
+    box-sizing: border-box;
+}
+
+#procura::placeholder {
+    color: #BDC1C3;
+}
+
+/* Container de Contatos */
+#containerContatos {
+    height: auto;
+    background-color: #FFF;
+}
+
+.boxContato {
+    cursor: pointer;
+    height: 72px;
+    background-color: #FFF;
+    border-top: 1px solid #f2f2f2;
+    position: relative;
+    box-sizing: border-box;
+}
+.boxContato:last-child {
+    border-bottom: 1px solid #f2f2f2;
+}
+.boxContato:hover{
+    background-color: #F4F5F5;
+}
+
+.chatAtivo {
+    background-color: #E9EBEB;
+}
+
+.chatAtivo.boxContato:hover{
+    background-color: #E9EBEB;
+}
+
+.boxContato .fotoUsuario{
+    width: 50px;
+}
+
+.ifoUsuario {
+    margin-left: 15px;
+    padding-top: 10px;
+    display: inline-block;
+}
+
+.ifoUsuario p, .infoMenssage p {
+    margin: 0;
+}
+
+.nomeUsuario {
+    font-size: 16px;
+    color: #000;
+    margin-bottom: 15px;
+}
+.previewMenssage {
+    font-size: 14px;
+    color: #454545;
+}
+
+.fa-check-double {
+    margin-right: 5px;
+    color: #4FC3F7;
+}
+
+.infoMenssage {
+    position: absolute;
+    top: 12px;
+    right: 20px;
+    display: inline-block;
+}
+
+.infoMenssage .horario {
+    font-size: 12px;
+    margin-bottom: 5px;
+    color: #CCC;
+}
+
+.menssagePendente {
+    background-color: #04fa67;
+    color: #FFF;
+    width: 19px;
+    height: 19px;
+    line-height: 19px;
+    font-size: 12px;
+    font-weight: bold;
+    border-radius: 50%;
+    text-align: center;
+    float: right;
+}
+
+/* CHAT */
+
+/* Container Chat */
+#chatArea {
+    position: absolute;
+    top: 0;
+    left: 410px;
+    width: calc(100% - 410px);
+    height: 100%;
+    background-color: #CCC;
+}
+
+/* Chat Navbar */
+#chatNavBar {
+    height: 60px;
+    background-color: #EEE;
+    border-left: 1px solid #DDD;
+}
+
+#chatNavBar p {
+    margin: 0;
+    float: right;
+    margin-left: 20px;
+}
+
+#containerContactInfo {
+    display: inline-block;
+}
+
+#containerContactInfo .nomeUsuario {
+    font-size: 16px;
+    height: 60px;
+    line-height: 60px;
+}
+
+#containerFerramentasChat {
+    float: right;
+    height: 60px;
+    line-height: 60px;
+    margin-right: 20px;
+}
+
+#containerFerramentasChat li {
+    display: inline-block;
+    margin: 0 15px 0 15px;
+    font-size: 18px;
+    color: #80868A;
+    cursor: pointer;
+}
+
+/* Menssagens */
+#containerMenssages {
+    background-color: #E1DAD2;
+    height: calc(100% - 120px);
+    position: relative;
+}
+
+#containerMenssages ul li {
+    margin: 0;
+}
+
+.bg-image {
+    background-image: url('./img/background_whats.png');
+    background-repeat: repeat;
+    opacity: .06;
+    width: 100%;
+    height: 100%;
+}
+
+.chatMenssages {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: auto;
+    padding: 30px 80px;
+    box-sizing: border-box;
+}
+
+.chatMenssages ul li {
+    display: inline-block;
+    color: #262626;
+    font-size: 14px;
+    padding: 7px;
+    border-radius: 7px;
+    position: relative;
+    clear: both;
+}
+
+.remetenteMenssage {
+    background-color: #FFF;
+    align-self: flex-start;
+    text-align: left;
+    width: fit-content;
+}
+
+.remetenteMenssage:before {
+    content: "";
+    width: 0;
+    height: 0;
+    border-bottom: 17px solid transparent;
+    border-right: 17px solid #FFF;
+    position: absolute;
+    top: 0;
+    left: -10px;
+}
+
+.destinMenssage {
+    background-color: #DCF8C6;
+    align-self: flex-end;
+    text-align: right;
+    width: fit-content;
+}
+
+.destinMenssage:after {
+    content: "";
+    width: 0;
+    height: 0;
+    border-bottom: 17px solid transparent;
+    border-left: 17px solid #DCF8C6;
+    position: absolute;
+    top: 0;
+    right: -10px;
+}
+
+/* Enviar Menssagem */
+.containerEnviarMenssage {
+    background-color: #EFEFEF;
+    border-left: 1px solid #DDD;
+    height: 60px;
+    padding: 0 20px 0 20px;
+    box-sizing: border-box;
+    position: relative;
+}
+
+.inputMenssage {
+    position: absolute;
+    top: 10px;
+    left: 60px;
+    background-color: #FFF;
+    border: none;
+    width: calc(89% - 100px);
+    height: 40px;
+    border-radius: 20px;
+    padding-left: 20px;
+    font-size: 16px;
+}
+
+.containerEnviarMenssage i {
+    font-size: 24px;
+    color: #80868A;
+    cursor: pointer;
+    height: 60px;
+    line-height: 60px;
+}
+
+.fa-microphone{
+    float: right;
+}
+.fa-paper-plane{
+    float: right;
+    margin-right: 20px;
+}
+
+.mensajesbox{
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
