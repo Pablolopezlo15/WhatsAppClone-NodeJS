@@ -1,318 +1,89 @@
+<!DOCTYPE html>
 <html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Welcome to Firebase Hosting</title>
 
-<head>
-  <title>Express</title>
-  <link rel="stylesheet" href="/stylesheets/style.css">
-  <script src="/socket.io/socket.io.js"></script>
-  <style>
-body {
-  font-family: Arial, sans-serif;
-  background-color: #f0f0f0;
-  margin: 0;
-  padding: 0;
-}
+    <!-- update the version number as needed -->
+    <script defer src="/__/firebase/10.8.0/firebase-app-compat.js"></script>
+    <!-- include only the Firebase features as you need -->
+    <script defer src="/__/firebase/10.8.0/firebase-auth-compat.js"></script>
+    <script defer src="/__/firebase/10.8.0/firebase-database-compat.js"></script>
+    <script defer src="/__/firebase/10.8.0/firebase-firestore-compat.js"></script>
+    <script defer src="/__/firebase/10.8.0/firebase-functions-compat.js"></script>
+    <script defer src="/__/firebase/10.8.0/firebase-messaging-compat.js"></script>
+    <script defer src="/__/firebase/10.8.0/firebase-storage-compat.js"></script>
+    <script defer src="/__/firebase/10.8.0/firebase-analytics-compat.js"></script>
+    <script defer src="/__/firebase/10.8.0/firebase-remote-config-compat.js"></script>
+    <script defer src="/__/firebase/10.8.0/firebase-performance-compat.js"></script>
+    <!-- 
+      initialize the SDK after all desired features are loaded, set useEmulator to false
+      to avoid connecting the SDK to running emulators.
+    -->
+    <script defer src="/__/firebase/init.js?useEmulator=true"></script>
 
-h1 {
-  font-size: 24px;
-  color: #075e54;
-  margin: 20px 0;
-}
-
-h2 {
-  font-size: 18px;
-  color: #128c7e;
-  margin: 10px 0;
-}
-
-.container {
-  max-width: 600px;
-  margin: 0 auto;
-  padding: 20px;
-  background-color: #fff;
-  border-radius: 10px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-}
-
-.input-group {
-  display: flex;
-  margin-bottom: 10px;
-}
-
-.input-group input[type="text"] {
-  flex: 1;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  font-size: 16px;
-}
-
-.input-group button {
-  padding: 10px 20px;
-  background-color: #075e54;
-  color: #fff;
-  border: none;
-  border-radius: 5px;
-  font-size: 16px;
-  cursor: pointer;
-}
-
-.chat-box {
-  background-color: #f5f5f5;
-  border-radius: 5px;
-  padding: 10px;
-  margin-bottom: 20px;
-}
-
-.message {
-  padding: 10px;
-  border-radius: 5px;
-  margin-bottom: 10px;
-}
-
-.enviado {
-  background-color: #dcf8c6;
-  display: flex;
-  justify-content: flex-end;
-}
-
-.recibido {
-  display: flex;
-  flex-direction: column-reverse;
-  justify-content: flex-start;
-  background-color: #fff;
-  border: #075e54 1px solid;
-  border-radius: 5px;
-}
-
-.nick {
-  font-weight: bold;
-  font-size: 10px;
-  margin-bottom: 5px;
-}
-
-.emojis {
-  width: 30px;
-  height: 30px;
-  margin: 5px;
-  cursor: pointer;
-}
-.datos-mensaje {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-  </style>
-</head>
-
-<body>
-  <div class="container">
-    <h1>Chat</h1>
-    <div class="input-group">
-      <input type="text" name="" id="nick" placeholder="Tu nombre">
-      <input type="hidden" name="avatar" id="avatar-input">
-      <p>Avatar</p>
-      <div>
-        <img src="images/avatars/1avatar.svg" alt="" id="avatar" class="avatar">
-        <img src="images/avatars/2avatar.svg" alt="" id="avatar" class="avatar">
-        <img src="images/avatars/3avatar.svg" alt="" id="avatar" class="avatar">
-        <img src="images/avatars/4avatar.svg" alt="" id="avatar" class="avatar">
-        <img src="images/avatars/5avatar.svg" alt="" id="avatar" class="avatar">
-      </div>
-      <button onclick="enviarAvatar()">Enviar Avatar</button>
-      <button onclick="enviarNick()">Enviar Nick</button>
+    <style media="screen">
+      body { background: #ECEFF1; color: rgba(0,0,0,0.87); font-family: Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 0; }
+      #message { background: white; max-width: 360px; margin: 100px auto 16px; padding: 32px 24px; border-radius: 3px; }
+      #message h2 { color: #ffa100; font-weight: bold; font-size: 16px; margin: 0 0 8px; }
+      #message h1 { font-size: 22px; font-weight: 300; color: rgba(0,0,0,0.6); margin: 0 0 16px;}
+      #message p { line-height: 140%; margin: 16px 0 24px; font-size: 14px; }
+      #message a { display: block; text-align: center; background: #039be5; text-transform: uppercase; text-decoration: none; color: white; padding: 16px; border-radius: 4px; }
+      #message, #message a { box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24); }
+      #load { color: rgba(0,0,0,0.4); text-align: center; font-size: 13px; }
+      @media (max-width: 600px) {
+        body, #message { margin-top: 0; background: white; box-shadow: none; }
+        body { border-top: 16px solid #ffa100; }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="message">
+      <h2>Welcome</h2>
+      <h1>Firebase Hosting Setup Complete</h1>
+      <p>You're seeing this because you've successfully setup Firebase Hosting. Now it's time to go build something extraordinary!</p>
+      <a target="_blank" href="https://firebase.google.com/docs/hosting/">Open Hosting Documentation</a>
     </div>
-    <form>
-      <input type="file" id="fileInput" name="fileInput">
-      <button type="button" id="uploadButton">Upload</button>
-    </form>
-    <div class="input-group">
-      <input type="text" id="mensaje" placeholder="Escribe un mensaje">
-      <button onclick="enviar()">Enviar</button>
-    </div>
-  
-    <div class="chat-box">
-      <h2>Emoji</h2>
-      <div>
-        <img src="images/emoticonos/Twemoji_1f600.svg" alt="" id="emoji1" class="emojis">
-        <img src="images/emoticonos/Face blowing a kiss.svg" alt="" id="emoji1" class="emojis">
-        <img src="images/emoticonos/Smiling face with heart-eyes.svg" alt="" id="emoji1" class="emojis">
-        <img src="images/emoticonos/Smiling face with sunglasses.svg" alt="" id="emoji1" class="emojis">
-        <img src="images/emoticonos/Smiling face with horns.svg" alt="" id="emoji1" class="emojis">
+    <p id="load">Firebase SDK Loading&hellip;</p>
 
-      </div>
-  
-      <input type="hidden" id="emoji">
-      <button onclick="enviaremoji()">Enviar emoji</button>
-    </div>
-    
-    <div class="chat-box">
-      <ul id="mensajes"></ul>
-    </div>
-  </div>
-  
-  <script>
-    const socket = io();
-    const messages = document.getElementById('messages');
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        const loadEl = document.querySelector('#load');
+        // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
+        // // The Firebase SDK is initialized and available here!
+        //
+        // firebase.auth().onAuthStateChanged(user => { });
+        // firebase.database().ref('/path/to/ref').on('value', snapshot => { });
+        // firebase.firestore().doc('/foo/bar').get().then(() => { });
+        // firebase.functions().httpsCallable('yourFunction')().then(() => { });
+        // firebase.messaging().requestPermission().then(() => { });
+        // firebase.storage().ref('/path/to/ref').getDownloadURL().then(() => { });
+        // firebase.analytics(); // call to activate
+        // firebase.analytics().logEvent('tutorial_completed');
+        // firebase.performance(); // call to activate
+        //
+        // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
 
-    function enviar() {
-        const input = document.getElementById('mensaje'); 
-        const listaMensajes = document.getElementById('mensajes');
-        socket.emit('mensaje', input.value);
-
-
-        const nuevoMensaje = document.createElement('li');
-        nuevoMensaje.setAttribute('class', 'enviado');
-        nuevoMensaje.textContent = input.value;
-        listaMensajes.appendChild(nuevoMensaje);
-    
-        input.value = '';
-    }
-
-    function enviaremoji() {
-        const inputemoji = document.getElementById('emoji');
-        const listaMensajes = document.getElementById('mensajes');
-        socket.emit('mensaje', inputemoji.value);
-
-        const nuevoMensaje = document.createElement('li');
-        const nuevoEmoji = document.createElement('img');
-        nuevoEmoji.setAttribute('src', inputemoji.value);
-        nuevoMensaje.appendChild(nuevoEmoji);
-        nuevoMensaje.setAttribute('class', 'enviado');
-        nuevoEmoji.setAttribute('class', 'emojis');
-        listaMensajes.appendChild(nuevoMensaje);
-
-        inputemoji.value = '';
-    }
-
-    const emojis = document.querySelectorAll('.emojis');
-    emojis.forEach(emoji => {
-        emoji.addEventListener('click', () => {
-            const inputemoji = document.getElementById('emoji');
-            inputemoji.value = emoji.src;
-        });
-    });
-
-
-    const input = document.querySelector('input');
-    input.addEventListener('keyup', (e) => {
-        if (e.key === 'Enter') {
-          enviar();
+        try {
+          let app = firebase.app();
+          let features = [
+            'auth', 
+            'database', 
+            'firestore',
+            'functions',
+            'messaging', 
+            'storage', 
+            'analytics', 
+            'remoteConfig',
+            'performance',
+          ].filter(feature => typeof app[feature] === 'function');
+          loadEl.textContent = `Firebase SDK loaded with ${features.join(', ')}`;
+        } catch (e) {
+          console.error(e);
+          loadEl.textContent = 'Error loading the Firebase SDK, check the console.';
         }
-    });
-
-    const avatar = document.querySelectorAll('.avatar');
-    avatar.forEach(avatar => {
-        avatar.addEventListener('click', () => {
-            const inputavatar = document.getElementById('avatar-input');
-            inputavatar.value = avatar.src;
-            console.log(inputavatar.value);
-        });
-    });
-
-    function recibir() {
-        const listaMensajes = document.getElementById('mensajes');
-        const mensajeRecibido = document.createElement('li');
-        mensajeRecibido.setAttribute('class', 'recibido');
-
-        socket.on('mensaje', (msg) => {
-          console.log(msg);
-          const mensajeRecibido = document.createElement('li');
-          mensajeRecibido.setAttribute('class', 'recibido');
-
-          const mensaje = document.createElement('p');
-
-          mensaje.textContent = msg.mensaje;
-          
-          mensajeRecibido.appendChild(mensaje);
-
-          const datosMensaje = document.createElement('div');
-          datosMensaje.setAttribute('class', 'datos-mensaje');
-          mensajeRecibido.appendChild(datosMensaje);
-          
-
-          const nick = document.createElement('p');
-          nick.setAttribute('class', 'nick');
-          nick.textContent = msg.nick;
-          datosMensaje.appendChild(nick);
-
-
-          const avatar = document.createElement('img');
-          avatar.setAttribute('src', msg.avatar);
-          avatar.setAttribute('class', 'emojis');
-          datosMensaje.appendChild(avatar);
-
-          const hora = document.createElement('p');
-          hora.textContent = msg.hora;
-          datosMensaje.appendChild(hora);
-
-          const archivo = document.createElement('img');
-          archivo.setAttribute('src', msg.archivo);
-          archivo.textContent = msg.archivo;
-          mensajeRecibido.appendChild(archivo);
-
-          listaMensajes.appendChild(mensajeRecibido);
-        });
-    }
-
-    function enviarNick() {
-        const input = document.getElementById('nick');
-        console.log(input.value);
-        socket.emit('nick', input.value);
-        console.log("Nick asignado: "+ input.value);
-        input.value = '';
-    }
-
-    function enviarAvatar() {
-        const input = document.getElementById('avatar-input');
-        console.log(input.value);
-        socket.emit('avatar', input.value);
-        console.log("Avatar asignado: "+ input.value);
-        input.value = '';
-    }
-
-    const uploadButton = document.getElementById('uploadButton');
-      const fileInput = document.getElementById('fileInput');
-      const endpoint = 'http://localhost:3000/upload';
-      uploadButton.addEventListener('click', () => {
-        const file = fileInput.files[0];
-        const formData = new FormData();
-        formData.append('fichero', file);
-        fetch(endpoint, {
-          method: 'POST',
-          body: formData
-        })
-        .then(data => {
-          console.log(file.name);
-          alert('File uploaded successfully!');
-          socket.emit('archivoCompartido', file.name);
-        })
-        .catch(error => {
-          console.error(error);
-          alert('Error uploading file');
-        });
       });
-
-    function compartirArchivo() {
-        const input = document.getElementById('fichero');
-        console.log(input.value);
-        socket.emit('archivoCompartido', input.value);
-        console.log("Archivo compartido: "+ input.value);
-        input.value = '';
-    }
-
-    function recibirArchivo(){
-      listaMensajes = document.getElementById('mensajes');
-      const img = document.createElement('img');
-      img.setAttribute('src', 'uploads/' + msg);
-      img.setAttribute('class', 'emojis');
-      listaMensajes.appendChild(img);
-
-    }
-
-    window.onload = () => {
-        recibir();
-    }
-</script>
-</body>
-
+    </script>
+  </body>
 </html>
