@@ -1,10 +1,28 @@
+let auth;
+
 window.onload = () => {
-    var login = true;
-    var chat = false;
-    var sala1 = false;
-    var sala2 = false;
+  var login = false;
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+  auth = firebase.auth();
 
+    user = auth.currentUser;
+    if (user) {
+      login = true;
+      document.getElementById('login').style.display = 'none';
+      document.getElementById('chat').style.display = 'block';
+      document.getElementById('sala1').style.display = 'none';
+      document.getElementById('sala2').style.display = 'none';
+    } else {
+      login = false;
+    }
 
+    if (login) {
+        document.getElementById('login').style.display = 'block';
+        document.getElementById('chat').style.display = 'none';
+        document.getElementById('sala1').style.display = 'none';
+        document.getElementById('sala2').style.display = 'none';
+    }
     recibir();
 }
 
@@ -131,12 +149,9 @@ function recibir() {
     });
 }
 
-function enviarNick() {
-    const input = document.getElementById('nick');
-    console.log(input.value);
-    socket.emit('nick', input.value);
-    console.log("Nick asignado: "+ input.value);
-    input.value = '';
+function enviarNick(nick) {
+    socket.emit('nick', nick);
+    console.log("Nick asignado: "+ nick);
 }
 
 function enviarAvatar() {
@@ -236,3 +251,29 @@ socket.on('usuarios', (usuarios) => {
     listaUsuarios.appendChild(boxContato);
   });
 });
+
+
+function iniciarSesionGoogle() {
+  const provider = new firebase.auth.GoogleAuthProvider();
+  auth.signInWithPopup(provider)
+  .then((result) => {
+    const user = result.user;
+    const nick = user.displayName;
+    enviarNick(nick);
+    console.log(user);
+    document.getElementById('login').style.display = 'none';
+    document.getElementById('chat').style.display = 'block';
+    document.getElementById('sala1').style.display = 'none';
+    document.getElementById('sala2').style.display = 'none';
+  });
+}
+
+function cerrarSesion() {
+  auth.signOut()
+  .then(() => {
+    document.getElementById('login').style.display = 'block';
+    document.getElementById('chat').style.display = 'none';
+    document.getElementById('sala1').style.display = 'none';
+    document.getElementById('sala2').style.display = 'none';
+  });
+}

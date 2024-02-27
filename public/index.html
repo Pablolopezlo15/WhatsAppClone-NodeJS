@@ -1,63 +1,123 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>WhatsApp Web</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="./stylesheets/sala.css">
+        <script src="https://kit.fontawesome.com/fd384f8db8.js" crossorigin="anonymous"></script>
+        <script src="/socket.io/socket.io.js"></script>
+        
+    </head>
+    <body>
 
-<head>
-  <title>Express</title>
-  <link rel="stylesheet" href="/stylesheets/style.css">
-  <script src="/socket.io/socket.io.js"></script>
-  <style>
 
-  </style>
-</head>
+        <div id="login">
+            <input type="text" name="" id="nick" placeholder="Tu nombre">
+            <button onclick="enviarNick()">Enviar Nick</button>
+            <button onclick="iniciarSesionGoogle()">Google</button>
+        </div>
 
-<body>
-  <div class="container">
-    <h1>Chat</h1>
-    <ul id="lista-usuarios"></ul>
-    <button onclick="entrarSala1()">Entrar Sala 1</button>
-    <button onclick="entrarSala2()">Entrar Sala 2</button>
-    <div class="input-group">
-      <input type="text" name="" id="nick" placeholder="Tu nombre">
-      <input type="hidden" name="avatar" id="avatar-input">
-      <p>Avatar</p>
-      <div>
-        <img src="images/avatars/1avatar.svg" alt="" id="avatar" class="avatar">
-        <img src="images/avatars/2avatar.svg" alt="" id="avatar" class="avatar">
-        <img src="images/avatars/3avatar.svg" alt="" id="avatar" class="avatar">
-        <img src="images/avatars/4avatar.svg" alt="" id="avatar" class="avatar">
-        <img src="images/avatars/5avatar.svg" alt="" id="avatar" class="avatar">
-      </div>
-      <button onclick="enviarAvatar()">Enviar Avatar</button>
-      <button onclick="enviarNick()">Enviar Nick</button>
-    </div>
-    <form>
-      <input type="file" id="fileInput" name="fileInput">
-      <button type="button" id="uploadButton">Upload</button>
-    </form>
-    <div class="input-group">
-      <input type="text" id="mensaje" placeholder="Escribe un mensaje">
-      <button onclick="enviar()">Enviar</button>
-    </div>
-  
-    <div class="chat-box">
-      <h2>Emoji</h2>
-      <div>
-        <img src="images/emoticonos/Twemoji_1f600.svg" alt="" id="emoji1" class="emojis">
-        <img src="images/emoticonos/Face blowing a kiss.svg" alt="" id="emoji1" class="emojis">
-        <img src="images/emoticonos/Smiling face with heart-eyes.svg" alt="" id="emoji1" class="emojis">
-        <img src="images/emoticonos/Smiling face with sunglasses.svg" alt="" id="emoji1" class="emojis">
-        <img src="images/emoticonos/Smiling face with horns.svg" alt="" id="emoji1" class="emojis">
 
-      </div>
-  
-      <input type="hidden" id="emoji">
-      <button onclick="enviaremoji()">Enviar emoji</button>
-    </div>
-    
-    <div class="chat-box">
-      <ul id="mensajes"></ul>
-    </div>
-  </div>
-  <script src="./javascripts/script.js"></script>
-</body>
 
+        <div id="container">
+            <aside id="sideBar">
+                <div id="barraDeFerramentas">
+                    <button onclick="cerrarSesion()">Cerrar Sesión</button>
+                    <img src="./img/avatar1.png" class="fotoUsuario" alt="Imagem do avatar 1">
+                    <div class='auxIcon'>
+                        <i class="fas fa-spinner"></i>
+                        <i class="fas fa-comment-alt"></i>
+                        <i class="fas fa-ellipsis-v"></i>
+                    </div>
+                </div>
+                <div id="containerNotification">
+                    <i class="fas fa-bell-slash"></i>
+                    <p id="receberNotification">Receba notificações</p>
+                    <p id="ativarNotification">Ativar notificações na area de trabalho <i class="fas fa-angle-right"></i> </p>
+                </div>
+                <div id="containerPesquisa">
+                    <i id="porcurarContato" class="fas fa-search"></i>
+                    <input type="text" name="search" id="procura" placeholder="Procurar ou começar uma nova conversa">
+                </div>
+                <div id="containerContatos">
+                    <div class="boxContato chatAtivo">
+                        <img src="./img/avatar2.png" alt="Imagem do avatar 2" class="fotoUsuario">
+                        <div class="ifoUsuario" onclick="entrarSala1()">
+                            <p class="nomeUsuario">Sala 1</p>
+                            <p class="previewMenssage">
+                                <i class="fas fa-check-double"></i> 
+                                Oi, tudo bem?
+                            </p>
+                        </div>
+                        <div class="infoMenssage">
+                            <p class="horario">22:40</p>
+                        </div>
+                    </div>
+                    <div class="boxContato">
+                        <img src="./img/avatar3.png" alt="Imagem do avatar 2" class="fotoUsuario">
+                        <div class="ifoUsuario" onclick="entrarSala2()">
+                            <p class="nomeUsuario">Sala 2</p>
+                            <p class="previewMenssage">
+                                Está disponível para um novo emprego?
+                            </p>
+                        </div>
+                        <div class="infoMenssage">
+                            <p class="horario">20:44</p>
+                            <p class="menssagePendente">3</p>
+                        </div>
+                    </div>
+                    <div class="boxContato">
+                        <ul id="lista-usuarios">
+
+                        </ul>
+                    </div>
+                </div>
+            </aside>
+            <main id="chatArea">
+                <nav id="chatNavBar">
+                    <div id="containerContactInfo">
+                        <img src="./img/avatar2.png" alt="Imagem do avatar 2" class="fotoUsuario">
+                        <p class="nomeUsuario">Sala 1</p>
+                    </div>
+                    <ul id="containerFerramentasChat">
+                        <li><i class="fas fa-search"></i></li>
+                        <li><i class="fas fa-paperclip"></i></li>
+                        <li><i class="fas fa-ellipsis-v"></i></li>
+                    </ul>
+                </nav>
+                <div id="containerMenssages">
+                    <div class="bg-image"></div>
+                    <div class="chatMenssages">
+                        <!-- <p class="remetenteMenssage">Oi, tudo bem?</p>
+                        <p class="destinMenssage">Oi, tudo bem?</p> -->
+                        <ul id="mensajes" class="mensajesbox">
+                            
+                        </ul>
+                    </div>
+                </div>
+                <div class="containerEnviarMenssage">
+                    <i class="fas fa-grin"></i>
+                    <input type="text" name="menssage" class="inputMenssage" id="mensaje" placeholder="Escribe un mensaje...">
+                    <i class="fas fa-microphone"></i>
+                    <i class="fas fa-paper-plane" onclick="enviar()"></i>
+
+                </div>
+            </main>
+        </div>
+<!-- Firebase App (the core Firebase SDK) -->
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+
+<!-- Add the Firebase products that you want to use -->
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+
+<!-- Your custom script -->
+<script src="./javascripts/firebase.js"></script>
+<script src="./javascripts/script.js"></script>
+    </body>
 </html>
