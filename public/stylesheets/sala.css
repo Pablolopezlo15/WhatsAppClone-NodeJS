@@ -27,13 +27,25 @@ ul {
     background-color: #EEE;
 }
 
+.misDatos{
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
 .fotoUsuario {
     width: 40px;
     border-radius: 50%;
     margin: 10px 0 0 15px;
     background-color: #CCC;
 }
+.fotoUsuarioMensaje{
+    width: 20px;
+    border-radius: 50%;
+    margin: 10px 0 0 15px;
+    background-color: #CCC;
 
+}
 .auxIcon {
     float: right;
     height: 60px;
@@ -300,7 +312,7 @@ ul {
 }
 
 .remetenteMenssage:before {
-    content: "";
+    content: url('');
     width: 0;
     height: 0;
     border-bottom: 17px solid transparent;

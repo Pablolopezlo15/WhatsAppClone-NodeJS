@@ -30,35 +30,47 @@ const io = new Server(server, {
 var users = 0;
 var usuarios = [];
 
+class User {
+  constructor(id, nick, avatar) {
+      this.id = id;
+      this.nick = nick;
+      this.avatar = avatar;
+  }
+}
+
 io.on('connection', (socket) => {
-  socket.on('nick', (nick) => {
-    // socket.nick = nick;
-    usuarios.push(nick);
+
+  socket.on('nick', (nick, avatar) => {
+    const user = new User(socket.id, nick, avatar);
+    usuarios.push(user);
     users++;
-    io.emit('entradausuarios', 'nº de usuarios conectados: ' + users);
+    io.emit('entradausuarios', nick + ' se ha conectado');
     console.log("El usuario " + nick + " se ha conectado");
-    console.log(usuarios);
     io.emit("usuarios", usuarios);
+    console.log(usuarios);
   });
 
   socket.on('disconnect', () => {
-    usuarios = usuarios.filter(usuario => usuario !== socket.nick);
+    console.log('Usuario desconectado');
     users--;
-    console.log("Hay " + users +" usuarios conectados");
-    console.log("El usuario " + socket.nick + " se ha desconectado");
+    usuarios = usuarios.filter(usuario => usuario.id !== socket.id);
+    io.emit('salidausuarios', 'Usuario desconectado');
     io.emit("usuarios", usuarios);
   });
 
   socket.on('mensaje', (msg) => {
-    datosAEnviar = {
-      nick: socket.nick,
-      avatar: socket.avatar,
-      mensaje: msg,
-      archivo: socket.archivo,
-      hora: new Date().toLocaleTimeString()
+    let user = usuarios.find(usuario => usuario.id === socket.id);
+    if (user) {
+      datosAEnviar = {
+        nick: user.nick,
+        avatar: user.avatar,
+        mensaje: msg,
+        archivo: user.archivo,
+        hora: new Date().toLocaleTimeString()
+      }
+      console.log(datosAEnviar);
+      socket.broadcast.emit('mensaje', datosAEnviar);
     }
-    console.log(datosAEnviar);
-    socket.broadcast.emit('mensaje', datosAEnviar);
   });
 
 
@@ -84,20 +96,27 @@ io.on('connection', (socket) => {
     socket.broadcast.emit('escribiendo', escribiendo);
   }
   );
+
   socket.on("entrarRoom", (room) => {
     socket.join(room);
-    io.emit("mensajeEnRoom", "Usuario " + socket.nick + " ha entrado en la sala " + room);
-    console.log("Usuario " + socket.nick + " ha entrado en la sala " + room);
-  });
-
-  socket.on("mensajeEnRoom", (datos) => {
-    datos = {
-      nick: socket.nick,
-      mensaje: datos.mensaje,
-      hora: new Date().toLocaleTimeString(),
-      room: datos.room
+    let user = usuarios.find(usuario => usuario.id === socket.id);
+    if (user) {
+      io.emit("mensajeEnRoom", "Usuario " + user.nick + " ha entrado en la sala " + room);
+      console.log("Usuario " + user.nick + " ha entrado en la sala " + room);
     }
-    socket.to(datos.room).emit("mensajeEnRoom", datos);
+  });
+  
+  socket.on("mensajeEnRoom", (datos) => {
+    let user = usuarios.find(usuario => usuario.id === socket.id);
+    if (user) {
+      datos = {
+        nick: user.nick,
+        mensaje: datos.mensaje,
+        hora: new Date().toLocaleTimeString(),
+        room: datos.room
+      }
+      socket.to(datos.room).emit("mensajeEnRoom", datos);
+    }
   });
 
   socket.on('cierraSesion', (data) => {

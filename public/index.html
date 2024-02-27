@@ -17,8 +17,6 @@
 
 
         <div id="login">
-            <input type="text" name="" id="nick" placeholder="Tu nombre">
-            <button onclick="enviarNick()">Enviar Nick</button>
             <button onclick="iniciarSesionGoogle()">Google</button>
         </div>
 
@@ -27,18 +25,18 @@
         <div id="chat">
             <aside id="sideBar">
                 <div id="barraDeFerramentas">
-                    <button onclick="cerrarSesion()">Cerrar Sesión</button>
-                    <img src="./img/avatar1.png" class="fotoUsuario" alt="Imagem do avatar 1">
+                    <!-- <button onclick="cerrarSesion()">Cerrar Sesión</button> -->
+                    <div class="misDatos">
+                        <div class="contenedorImg">
+                            <img src="" class="fotoUsuario" id="miimagen" alt="Imagem do avatar 1">
+                        </div>
+                        <p id="miusuario"></p>
+                    </div>
                     <div class='auxIcon'>
                         <i class="fas fa-spinner"></i>
                         <i class="fas fa-comment-alt"></i>
                         <i class="fas fa-ellipsis-v"></i>
                     </div>
-                </div>
-                <div id="containerNotification">
-                    <i class="fas fa-bell-slash"></i>
-                    <p id="receberNotification">Receba notificações</p>
-                    <p id="ativarNotification">Ativar notificações na area de trabalho <i class="fas fa-angle-right"></i> </p>
                 </div>
                 <div id="containerPesquisa">
                     <i id="porcurarContato" class="fas fa-search"></i>

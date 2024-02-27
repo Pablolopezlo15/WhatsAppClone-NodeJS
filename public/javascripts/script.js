@@ -11,7 +11,7 @@ window.onload = () => {
     auth.onAuthStateChanged(currentUser => {
       if (currentUser) {
         console.log('Usuario inició sesión: ', currentUser);
-        configurarUsuario(currentUser.displayName);
+        configurarUsuario(user);
         user = currentUser;
       } else {
         console.log('No hay ningún usuario con la sesión iniciada');
@@ -42,14 +42,14 @@ window.onload = () => {
     recibir();
 }
 
-window.addEventListener('beforeunload', (event) => {
-  auth.signOut().then(() => {
-    document.getElementById('login').style.display = 'block';
-    document.getElementById('chat').style.display = 'none';
-    document.getElementById('sala1').style.display = 'none';
-    document.getElementById('sala2').style.display = 'none';
-  });
-});
+// window.addEventListener('beforeunload', (event) => {
+//   auth.signOut().then(() => {
+//     document.getElementById('login').style.display = 'block';
+//     document.getElementById('chat').style.display = 'none';
+//     document.getElementById('sala1').style.display = 'none';
+//     document.getElementById('sala2').style.display = 'none';
+//   });
+// });
 
 const socket = io();
 const messages = document.getElementById('messages');
@@ -158,7 +158,7 @@ function recibir() {
 
       const avatar = document.createElement('img');
       avatar.setAttribute('src', msg.avatar);
-      avatar.setAttribute('class', 'emojis');
+      avatar.setAttribute('class', 'fotoUsuarioMensaje');
       datosMensaje.appendChild(avatar);
 
       const hora = document.createElement('p');
@@ -174,10 +174,7 @@ function recibir() {
     });
 }
 
-function enviarNick(nick) {
-    socket.emit('nick', nick);
-    console.log("Nick asignado: "+ nick);
-}
+
 
 function enviarAvatar() {
     const input = document.getElementById('avatar-input');
@@ -254,12 +251,12 @@ socket.on('usuarios', (usuarios) => {
     menssagePendente.classList.add('menssagePendente');
 
     // Añadir los atributos a los elementos
-    img.setAttribute('src', user.photoURL);
+    img.setAttribute('src', usuario.avatar);
     img.setAttribute('alt', 'Imagem do avatar 2');
     ifoUsuario.setAttribute('onclick', 'entrarSala2()');
 
     // Añadir el texto a los elementos
-    nomeUsuario.textContent = usuario;
+    nomeUsuario.textContent = usuario.nick;
     previewMenssage.textContent = '-';
     horario.textContent = '20:44';
     menssagePendente.textContent = '3';
@@ -285,13 +282,21 @@ function iniciarSesionGoogle() {
   .then((result) => {
     const user = result.user;
     let nick = user.displayName;
-    configurarUsuario(nick);
+    configurarUsuario(user);
   });
 }
 
-function configurarUsuario(nick){
-  console.log(nick);
-  enviarNick(nick);
+function configurarUsuario(user){
+  
+  let nick = user.displayName;
+  let avatar = user.photoURL;
+  console.log(avatar);
+  socket.emit('nick', nick, avatar);
+
+  document.getElementById('miusuario').textContent = nick;
+  miImagen = document.getElementById('miimagen');
+  miImagen.setAttribute('src', user.photoURL);
+
   document.getElementById('login').style.display = 'none';
   document.getElementById('chat').style.display = 'block';
   document.getElementById('sala1').style.display = 'none';
