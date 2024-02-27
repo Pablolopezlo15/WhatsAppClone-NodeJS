@@ -32,7 +32,7 @@ var usuarios = [];
 
 io.on('connection', (socket) => {
   socket.on('nick', (nick) => {
-    socket.nick = nick;
+    // socket.nick = nick;
     usuarios.push(nick);
     users++;
     io.emit('entradausuarios', 'nº de usuarios conectados: ' + users);
@@ -61,11 +61,7 @@ io.on('connection', (socket) => {
     socket.broadcast.emit('mensaje', datosAEnviar);
   });
 
-  socket.on('nick', (nick) => {
-    socket.nick = nick;
-    console.log("El usuario " + nick + " se ha conectado");
-    socket.broadcast.emit('nick', nick);
-  });
+
 
   socket.on('avatar', (avatar) => {
     socket.avatar = avatar;
@@ -103,6 +99,12 @@ io.on('connection', (socket) => {
     }
     socket.to(datos.room).emit("mensajeEnRoom", datos);
   });
+
+  socket.on('cierraSesion', (data) => {
+    console.log('Usuario cerró la sesión: ', data.nick);
+    usuarios = usuarios.filter(usuario => usuario !== data.nick);
+  });
+
 });
 
 

@@ -1,18 +1,34 @@
 let auth;
+let user;
 
 window.onload = () => {
-  var login = false;
-  firebase.initializeApp(firebaseConfig);
-  const db = firebase.firestore();
-  auth = firebase.auth();
-
+    var login = false;
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    auth = firebase.auth();
     user = auth.currentUser;
+
+    auth.onAuthStateChanged(currentUser => {
+      if (currentUser) {
+        console.log('Usuario inició sesión: ', currentUser);
+        configurarUsuario(currentUser.displayName);
+        user = currentUser;
+      } else {
+        console.log('No hay ningún usuario con la sesión iniciada');
+        document.getElementById('login').style.display = 'block';
+        document.getElementById('chat').style.display = 'none';
+        document.getElementById('sala1').style.display = 'none';
+        document.getElementById('sala2').style.display = 'none';
+        user = null;
+      }
+    });
+
     if (user) {
-      login = true;
-      document.getElementById('login').style.display = 'none';
-      document.getElementById('chat').style.display = 'block';
-      document.getElementById('sala1').style.display = 'none';
-      document.getElementById('sala2').style.display = 'none';
+        login = true;
+        document.getElementById('login').style.display = 'none';
+        document.getElementById('chat').style.display = 'block';
+        document.getElementById('sala1').style.display = 'none';
+        document.getElementById('sala2').style.display = 'none';
     } else {
       login = false;
     }
@@ -25,6 +41,15 @@ window.onload = () => {
     }
     recibir();
 }
+
+window.addEventListener('beforeunload', (event) => {
+  auth.signOut().then(() => {
+    document.getElementById('login').style.display = 'block';
+    document.getElementById('chat').style.display = 'none';
+    document.getElementById('sala1').style.display = 'none';
+    document.getElementById('sala2').style.display = 'none';
+  });
+});
 
 const socket = io();
 const messages = document.getElementById('messages');
@@ -202,6 +227,7 @@ function recibirArchivo(){
 }
 
 socket.on('usuarios', (usuarios) => {
+  const user = auth.currentUser;
   console.log(usuarios);
   const listaUsuarios = document.getElementById('lista-usuarios');
   listaUsuarios.innerHTML = '';
@@ -228,7 +254,7 @@ socket.on('usuarios', (usuarios) => {
     menssagePendente.classList.add('menssagePendente');
 
     // Añadir los atributos a los elementos
-    img.setAttribute('src', './img/avatar3.png');
+    img.setAttribute('src', user.photoURL);
     img.setAttribute('alt', 'Imagem do avatar 2');
     ifoUsuario.setAttribute('onclick', 'entrarSala2()');
 
@@ -258,19 +284,27 @@ function iniciarSesionGoogle() {
   auth.signInWithPopup(provider)
   .then((result) => {
     const user = result.user;
-    const nick = user.displayName;
-    enviarNick(nick);
-    console.log(user);
-    document.getElementById('login').style.display = 'none';
-    document.getElementById('chat').style.display = 'block';
-    document.getElementById('sala1').style.display = 'none';
-    document.getElementById('sala2').style.display = 'none';
+    let nick = user.displayName;
+    configurarUsuario(nick);
   });
+}
+
+function configurarUsuario(nick){
+  console.log(nick);
+  enviarNick(nick);
+  document.getElementById('login').style.display = 'none';
+  document.getElementById('chat').style.display = 'block';
+  document.getElementById('sala1').style.display = 'none';
+  document.getElementById('sala2').style.display = 'none';
 }
 
 function cerrarSesion() {
   auth.signOut()
   .then(() => {
+    socket.emit('cierraSesion', { nick: user.displayName });
+    console.log(user);
+    login = false;
+    user = null;
     document.getElementById('login').style.display = 'block';
     document.getElementById('chat').style.display = 'none';
     document.getElementById('sala1').style.display = 'none';
