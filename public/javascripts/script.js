@@ -42,22 +42,23 @@ window.onload = () => {
     recibir();
 }
 
-// window.addEventListener('beforeunload', (event) => {
-//   auth.signOut().then(() => {
-//     document.getElementById('login').style.display = 'block';
-//     document.getElementById('chat').style.display = 'none';
-//     document.getElementById('sala1').style.display = 'none';
-//     document.getElementById('sala2').style.display = 'none';
-//   });
-// });
+window.addEventListener('beforeunload', (event) => {
+  auth.signOut().then(() => {
+    document.getElementById('login').style.display = 'block';
+    document.getElementById('chat').style.display = 'none';
+    document.getElementById('sala1').style.display = 'none';
+    document.getElementById('sala2').style.display = 'none';
+  });
+});
 
 const socket = io();
-const messages = document.getElementById('messages');
+const mensajes = document.getElementById('mensajes');
 const room = 'Sala1';
 const room2 = 'Sala2';
 
 
 function entrarSala1() {
+  mensajes.innerHTML = '';
   socket.emit('entrarRoom', room);
   login = false;
   chat = false;
@@ -65,6 +66,7 @@ function entrarSala1() {
   sala2 = false;
 }
 function entrarSala2() {
+  mensajes.innerHTML = '';
   socket.emit('entrarRoom', room2);
   login = false;
   chat = false;
@@ -76,6 +78,10 @@ socket.on("mensajeEnRoom", (msg) => {
 });
 function enviar() {
     const input = document.getElementById('mensaje'); 
+    console.log(input.value);
+    if (input.value === '') {
+      return;
+    }
     const listaMensajes = document.getElementById('mensajes');
     socket.emit('mensaje', input.value);
 
@@ -84,6 +90,9 @@ function enviar() {
     nuevoMensaje.setAttribute('class', 'destinMenssage');
     nuevoMensaje.textContent = input.value;
     listaMensajes.appendChild(nuevoMensaje);
+
+    let mensajesbox = document.querySelector('.mensajesbox');
+    mensajesbox.scrollTop = mensajesbox.scrollHeight;
 
     input.value = '';
 }
@@ -113,7 +122,7 @@ emojis.forEach(emoji => {
 });
 
 
-const input = document.querySelector('input');
+const input = document.getElementById('mensaje');
 input.addEventListener('keyup', (e) => {
     if (e.key === 'Enter') {
       enviar();
@@ -130,6 +139,7 @@ avatar.forEach(avatar => {
 });
 
 function recibir() {
+
     const listaMensajes = document.getElementById('mensajes');
     const mensajeRecibido = document.createElement('li');
     mensajeRecibido.setAttribute('class', 'remetenteMenssage');
@@ -149,17 +159,16 @@ function recibir() {
       datosMensaje.setAttribute('class', 'datos-mensaje');
       mensajeRecibido.appendChild(datosMensaje);
       
+      const avatar = document.createElement('img');
+      avatar.setAttribute('src', msg.avatar);
+      avatar.setAttribute('class', 'fotoUsuarioMensaje');
+      datosMensaje.appendChild(avatar);
+
 
       const nick = document.createElement('p');
       nick.setAttribute('class', 'nick');
       nick.textContent = msg.nick;
       datosMensaje.appendChild(nick);
-
-
-      const avatar = document.createElement('img');
-      avatar.setAttribute('src', msg.avatar);
-      avatar.setAttribute('class', 'fotoUsuarioMensaje');
-      datosMensaje.appendChild(avatar);
 
       const hora = document.createElement('p');
       hora.textContent = msg.hora;
@@ -171,7 +180,12 @@ function recibir() {
       // mensajeRecibido.appendChild(archivo);
 
       listaMensajes.appendChild(mensajeRecibido);
+
+      let mensajesbox = document.querySelector('.mensajesbox');
+      mensajesbox.scrollTop = mensajesbox.scrollHeight;
     });
+
+
 }
 
 
@@ -262,11 +276,11 @@ socket.on('usuarios', (usuarios) => {
     menssagePendente.textContent = '3';
 
     // Añadir los elementos al DOM
+    boxContato.appendChild(img);
     ifoUsuario.appendChild(nomeUsuario);
     ifoUsuario.appendChild(previewMenssage);
     infoMenssage.appendChild(horario);
     infoMenssage.appendChild(menssagePendente);
-    boxContato.appendChild(img);
     boxContato.appendChild(ifoUsuario);
     boxContato.appendChild(infoMenssage);
 

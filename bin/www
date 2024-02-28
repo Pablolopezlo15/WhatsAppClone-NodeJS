@@ -66,7 +66,7 @@ io.on('connection', (socket) => {
         avatar: user.avatar,
         mensaje: msg,
         archivo: user.archivo,
-        hora: new Date().toLocaleTimeString()
+        hora: new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })
       }
       console.log(datosAEnviar);
       socket.broadcast.emit('mensaje', datosAEnviar);
@@ -84,7 +84,9 @@ io.on('connection', (socket) => {
   socket.on('archivoCompartido', (archivo) => { 
     console.log("Recibo fichero")
     if (!archivo) {
-      return res.status(400).send('No files were uploaded.');
+      // Emitir un evento de error de vuelta al cliente
+      socket.emit('error', 'No files were uploaded.');
+      return;
     }
     uploadPath = __dirname + '/public/archivosComp/' + archivo;
     console.log(archivo);

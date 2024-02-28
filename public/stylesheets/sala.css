@@ -39,13 +39,15 @@ ul {
     margin: 10px 0 0 15px;
     background-color: #CCC;
 }
-.fotoUsuarioMensaje{
-    width: 20px;
+.fotoUsuarioMensaje {
+    position: absolute;
+    width: 29px;
     border-radius: 50%;
-    margin: 10px 0 0 15px;
+    margin-left: -52px;
+    margin-bottom: 53px;
     background-color: #CCC;
-
 }
+
 .auxIcon {
     float: right;
     height: 60px;
@@ -268,7 +270,7 @@ ul {
 /* Menssagens */
 #containerMenssages {
     background-color: #E1DAD2;
-    height: calc(100% - 120px);
+    height: calc(100vh - 120px);
     position: relative;
 }
 
@@ -279,7 +281,7 @@ ul {
 .bg-image {
     background-image: url('./img/background_whats.png');
     background-repeat: repeat;
-    opacity: .06;
+    opacity: .6;
     width: 100%;
     height: 100%;
 }
@@ -290,10 +292,24 @@ ul {
     bottom: 0;
     width: 100%;
     height: auto;
-    padding: 30px 80px;
+    max-height: 100%;
+    padding: 30px 40px;
     box-sizing: border-box;
+    overflow-x: visible;
 }
-
+.mensajesbox{
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    max-height: 80vh;
+    padding: 1vw 5vw;
+    overflow-x: visible;
+    overflow-y: scroll;
+    scroll-behavior: smooth;
+}
+::-webkit-scrollbar {
+    display: none;
+}
 .chatMenssages ul li {
     display: inline-block;
     color: #262626;
@@ -342,6 +358,9 @@ ul {
 
 /* Enviar Menssagem */
 .containerEnviarMenssage {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     background-color: #EFEFEF;
     border-left: 1px solid #DDD;
     height: 60px;
@@ -351,12 +370,10 @@ ul {
 }
 
 .inputMenssage {
-    position: absolute;
-    top: 10px;
     left: 60px;
     background-color: #FFF;
     border: none;
-    width: calc(89% - 100px);
+    width: calc(95% - 100px);
     height: 40px;
     border-radius: 20px;
     padding-left: 20px;
@@ -371,19 +388,31 @@ ul {
     line-height: 60px;
 }
 
-.fa-microphone{
-    float: right;
+.fa-paperclip:hover {
+    color: #4FC3F7;
+    cursor: pointer;
 }
 .fa-paper-plane{
     float: right;
     margin-right: 20px;
 }
-
-.mensajesbox{
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
+.fa-paper-plane:hover{
+    color: #4FC3F7;
+    cursor: pointer;
 }
+#fichero{
+    margin-left:-28px ;
+    margin-top: 10px;
+    width: 30px;
+    height: 40px;
+    border-radius: 50%;
+    position: absolute;
+    background-color: blue;
+    opacity: 0;
+    z-index: 0;
+}
+
+
 
 .datos-mensaje{
     display: flex;
