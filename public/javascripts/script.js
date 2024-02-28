@@ -185,6 +185,23 @@ function recibir() {
       mensajesbox.scrollTop = mensajesbox.scrollHeight;
     });
 
+    socket.on('entradausuarios', (entradausuarios) => {
+      console.log(entradausuarios);
+      const listaMensajes = document.getElementById('mensajes');
+      const mensajeRecibido = document.createElement('li');
+      mensajeRecibido.setAttribute('class', 'conexionMensaje');
+      mensajeRecibido.textContent = entradausuarios;
+      listaMensajes.appendChild(mensajeRecibido);
+    });
+
+    socket.on('salidausuarios', (salidausuarios) => {
+      console.log(salidausuarios);
+      const listaMensajes = document.getElementById('mensajes');
+      const mensajeRecibido = document.createElement('li');
+      mensajeRecibido.setAttribute('class', 'conexionMensaje');
+      mensajeRecibido.textContent = salidausuarios;
+      listaMensajes.appendChild(mensajeRecibido);
+    });
 
 }
 

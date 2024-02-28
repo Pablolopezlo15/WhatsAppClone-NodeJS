@@ -51,10 +51,14 @@ io.on('connection', (socket) => {
   });
 
   socket.on('disconnect', () => {
-    console.log('Usuario desconectado');
     users--;
+    let user = usuarios.find(usuario => usuario.id === socket.id);
     usuarios = usuarios.filter(usuario => usuario.id !== socket.id);
-    io.emit('salidausuarios', 'Usuario desconectado');
+    if (user) {
+      io.emit('salidausuarios', user.nick + ' se ha desconectado');
+    } else {
+      io.emit('salidausuarios', 'Un usuario se ha desconectado');
+    }
     io.emit("usuarios", usuarios);
   });
 
@@ -121,10 +125,6 @@ io.on('connection', (socket) => {
     }
   });
 
-  socket.on('cierraSesion', (data) => {
-    console.log('Usuario cerró la sesión: ', data.nick);
-    usuarios = usuarios.filter(usuario => usuario !== data.nick);
-  });
 
 });
 
