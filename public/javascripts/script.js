@@ -198,7 +198,7 @@ function recibir() {
       console.log(salidausuarios);
       const listaMensajes = document.getElementById('mensajes');
       const mensajeRecibido = document.createElement('li');
-      mensajeRecibido.setAttribute('class', 'conexionMensaje');
+      mensajeRecibido.setAttribute('class', 'desconexionMensaje');
       mensajeRecibido.textContent = salidausuarios;
       listaMensajes.appendChild(mensajeRecibido);
     });
@@ -215,27 +215,27 @@ function enviarAvatar() {
     input.value = '';
 }
 
-// const uploadButton = document.getElementById('uploadButton');
-//   const fileInput = document.getElementById('fileInput');
-//   const endpoint = 'http://localhost:3000/upload';
-//   uploadButton.addEventListener('click', () => {
-//     const file = fileInput.files[0];
-//     const formData = new FormData();
-//     formData.append('fichero', file);
-//     fetch(endpoint, {
-//       method: 'POST',
-//       body: formData
-//     })
-//     .then(data => {
-//       console.log(file.name);
-//       alert('File uploaded successfully!');
-//       socket.emit('archivoCompartido', file.name);
-//     })
-//     .catch(error => {
-//       console.error(error);
-//       alert('Error uploading file');
-//     });
-//   });
+const subirAvatar = document.getElementById('subirAvatar');
+  const elegirAvatar = document.getElementById('elegirAvatar');
+  const endpoint = 'http://localhost:3000/upload';
+  subirAvatar.addEventListener('click', () => {
+    const file = elegirAvatar.files[0];
+    const formData = new FormData();
+    formData.append('avatar', file);
+    fetch(endpoint, {
+      method: 'POST',
+      body: formData
+    })
+    .then(data => {
+      console.log(file.name);
+      alert('File uploaded successfully!');
+      socket.emit('archivoCompartido', file.name);
+    })
+    .catch(error => {
+      console.error(error);
+      alert('Error uploading file');
+    });
+  });
 
 function compartirArchivo() {
     const input = document.getElementById('fichero');
@@ -282,7 +282,10 @@ socket.on('usuarios', (usuarios) => {
     menssagePendente.classList.add('menssagePendente');
 
     // Añadir los atributos a los elementos
+    inputavatar = document.getElementById('elegirAvatar');
     img.setAttribute('src', usuario.avatar);
+
+
     img.setAttribute('alt', 'Imagem do avatar 2');
     ifoUsuario.setAttribute('onclick', 'entrarSala2()');
 
@@ -317,16 +320,36 @@ function iniciarSesionGoogle() {
   });
 }
 
+function iniciarSesionGitHub() {
+  const provider = new firebase.auth.GithubAuthProvider();
+  auth.signInWithPopup(provider)
+  .then((result) => {
+    const user = result.user;
+    let nick = user.displayName;
+    configurarUsuario(user);
+  });
+}
+
+
 function configurarUsuario(user){
-  
+
+  let inputavatar = document.getElementById('elegirAvatar');
+  let  miImagen = document.getElementById('miimagen');
+
   let nick = user.displayName;
-  let avatar = user.photoURL;
-  console.log(avatar);
+  let avatar;
+  
+  if (inputavatar.value === '') {
+    avatar = user.photoURL;
+  } else {
+    let filename = inputavatar.files[0].name;
+    avatar = './archivosComp/' + filename;
+  }
+
   socket.emit('nick', nick, avatar);
 
   document.getElementById('miusuario').textContent = nick;
-  miImagen = document.getElementById('miimagen');
-  miImagen.setAttribute('src', user.photoURL);
+  miImagen.setAttribute('src', avatar);
 
   document.getElementById('login').style.display = 'none';
   document.getElementById('chat').style.display = 'block';

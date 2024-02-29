@@ -314,6 +314,13 @@ ul {
     font-size: 1.5rem;
     background-color: #85c1e9;
 }
+.desconexionMensaje{
+    text-align: center;
+    height: 100%;
+    width: 100%;
+    font-size: 1.5rem;
+    background-color: #e0796e;
+}
 ::-webkit-scrollbar {
     display: none;
 }

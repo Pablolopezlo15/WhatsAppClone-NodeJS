@@ -31,7 +31,7 @@ app.post('/upload', function(req, res) {
     }
   
     // The name of the input field (i.e. "sampleFile") is used to retrieve the uploaded file
-    sampleFile = req.files.fichero;
+    sampleFile = req.files.avatar;
     uploadPath = __dirname + '/public/archivosComp/' + sampleFile.name;
   
     // Use the mv() method to place the file somewhere on your server
@@ -41,7 +41,7 @@ app.post('/upload', function(req, res) {
   
       res.send('File uploaded!');
     });
-  });
+});
 
 
 module.exports = app;
