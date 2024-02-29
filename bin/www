@@ -29,12 +29,13 @@ const io = new Server(server, {
 });
 var users = 0;
 var usuarios = [];
-
+var room;
 class User {
   constructor(id, nick, avatar) {
       this.id = id;
       this.nick = nick;
       this.avatar = avatar;
+      this.room = null;
   }
 }
 
@@ -68,8 +69,7 @@ io.on('connection', (socket) => {
       datosAEnviar = {
         nick: user.nick,
         avatar: user.avatar,
-        mensaje: msg.mensaje,
-        room: msg.sala,
+        mensaje: msg,
         archivo: user.archivo,
         hora: new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })
       }
@@ -107,6 +107,7 @@ io.on('connection', (socket) => {
     socket.join(room);
     let user = usuarios.find(usuario => usuario.id === socket.id);
     if (user) {
+      user.room = room;
       io.emit("mensajeEnRoom", "Usuario " + user.nick + " ha entrado en la sala " + room);
       console.log("Usuario " + user.nick + " ha entrado en la sala " + room);
     }
@@ -114,13 +115,18 @@ io.on('connection', (socket) => {
   
   socket.on("mensajeEnRoom", (datos) => {
     let user = usuarios.find(usuario => usuario.id === socket.id);
-    if (user) {
+    if (user && user.room) {
       datos = {
         nick: user.nick,
+        avatar: user.avatar,
         mensaje: datos.mensaje,
-        hora: new Date().toLocaleTimeString(),
-        room: datos.room
+        archivo: datos.archivo,
+        hora: new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' }),
+        room: user.room
+
       }
+      user.room = datos.room;
+      console.log("Mensaje enviado en la sala " + datos.room + ": ", datos);
       socket.to(datos.room).emit("mensajeEnRoom", datos);
     }
   });

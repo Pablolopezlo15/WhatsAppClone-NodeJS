@@ -44,12 +44,11 @@ window.addEventListener('beforeunload', (event) => {
 
 const socket = io();
 const mensajes = document.getElementById('mensajes');
-const room = 'Sala1';
-const room2 = 'Sala2';
+const room = 'sala1';
+const room2 = 'sala2';
 
 function entrarGeneral() {
   salaActual = 'general';
-  mensajes.innerHTML = '';
   login.style.display = 'none';
   chat.style.display = 'block';
   chatArea.style.display = 'block';
@@ -59,7 +58,6 @@ function entrarGeneral() {
 
 function entrarSala1() {
   salaActual = 'sala1';
-  mensajes.innerHTML = '';
   socket.emit('entrarRoom', room);
   login.style.display = 'none';
   chat.style.display = 'block';
@@ -70,7 +68,6 @@ function entrarSala1() {
 }
 function entrarSala2() {
   salaActual = 'sala2';
-  mensajes.innerHTML = '';
   socket.emit('entrarRoom', room2);
   login.style.display = 'none';
   chat.style.display = 'block';
@@ -84,13 +81,12 @@ socket.on("mensajeEnRoom", (msg) => {
 function enviar() {
     const input = document.getElementById('mensaje'); 
     console.log(input.value);
-    const mensaje = input.value.trim();
+
     if (input.value === '') {
       return;
     }
     const listaMensajes = document.getElementById('mensajes');
-    // socket.emit('mensaje', input.value);
-    socket.emit('mensaje', { mensaje, sala: salaActual });
+    socket.emit('mensaje', input.value);
 
     const nuevoMensaje = document.createElement('li');
     nuevoMensaje.setAttribute('class', 'destinMenssage');
@@ -103,28 +99,18 @@ function enviar() {
     input.value = '';
 }
 
-function enviarRoom(room) {
-  let input;
-  if (room == 'sala1') {
-    input = document.getElementById('mensajesala1'); 
-  }
-  else if (room == 'sala2') {
-    input = document.getElementById('mensajesala2');
-  }
-  console.log(input.value);
-  if (input.value === '') {
-    return;
-  }
-  const listaMensajes = document.getElementById('mensajes');
-  
-  socket.emit('mensajeEnRoom', { mensaje: input.value, room: room });
+function enviarRoom() {
+  console.log(salaActual);
+  const listaMensajes = document.getElementById('mensajes-'+salaActual);
+  const input = document.getElementById('mensaje'+salaActual);
+  socket.emit('mensajeEnRoom', { mensaje: input.value, room: salaActual });
 
   const nuevoMensaje = document.createElement('li');
   nuevoMensaje.setAttribute('class', 'destinMenssage');
   nuevoMensaje.textContent = input.value;
   listaMensajes.appendChild(nuevoMensaje);
 
-  let mensajesbox = document.querySelector('.mensajesbox');
+  let mensajesbox = document.getElementById('mensajes-'+salaActual);
   mensajesbox.scrollTop = mensajesbox.scrollHeight;
 
   input.value = '';
@@ -211,7 +197,6 @@ function recibir() {
       mensajeRecibido.setAttribute('class', 'remetenteMenssage');
 
       const mensaje = document.createElement('p');
-
       mensaje.textContent = msg.mensaje;
       
       mensajeRecibido.appendChild(mensaje);
@@ -244,6 +229,39 @@ function recibir() {
 
       let mensajesbox = document.querySelector('.mensajesbox');
       mensajesbox.scrollTop = mensajesbox.scrollHeight;
+    });
+
+    socket.on('mensajeEnRoom', (msg) => {
+      console.log(msg);
+      const mensajeRecibido = document.createElement('li');
+      mensajeRecibido.setAttribute('class', 'remetenteMenssage');
+      // Crear elementos HTML para mostrar el mensaje
+    
+      const contenidoMensaje = document.createElement('div');
+      contenidoMensaje.classList.add('contenido-mensaje');
+    
+      const nick = document.createElement('p');
+      nick.textContent = msg.nick;
+      nick.classList.add('nick');
+    
+      const mensaje = document.createElement('p');
+      mensaje.textContent = msg.mensaje;
+    
+      const hora = document.createElement('p');
+      hora.textContent = msg.hora;
+    
+      // Agregar elementos al mensaje recibido
+      contenidoMensaje.appendChild(nick);
+      contenidoMensaje.appendChild(mensaje);
+      contenidoMensaje.appendChild(hora);
+      mensajeRecibido.appendChild(contenidoMensaje);
+    
+      // Agregar mensaje recibido a la lista de mensajes
+      const listaMensajes = document.getElementById('mensajes-sala1'); // Asegúrate de tener una lista de mensajes específica para cada sala
+      listaMensajes.appendChild(mensajeRecibido);
+    
+      // Desplazar la lista de mensajes al final
+      listaMensajes.scrollTop = listaMensajes.scrollHeight;
     });
 
     socket.on('entradausuarios', (entradausuarios) => {
