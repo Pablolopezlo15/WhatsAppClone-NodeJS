@@ -217,7 +217,8 @@ function enviarAvatar() {
 
 const subirAvatar = document.getElementById('subirAvatar');
   const elegirAvatar = document.getElementById('elegirAvatar');
-  const endpoint = 'http://localhost:3000/upload';
+  // const endpoint = 'http://localhost:3000/upload';
+  const endpoint = 'https://whatsappclone-nodejs.onrender.com/upload';
   subirAvatar.addEventListener('click', () => {
     const file = elegirAvatar.files[0];
     const formData = new FormData();
