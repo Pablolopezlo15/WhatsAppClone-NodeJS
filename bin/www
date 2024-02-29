@@ -68,7 +68,8 @@ io.on('connection', (socket) => {
       datosAEnviar = {
         nick: user.nick,
         avatar: user.avatar,
-        mensaje: msg,
+        mensaje: msg.mensaje,
+        room: msg.sala,
         archivo: user.archivo,
         hora: new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })
       }
@@ -98,10 +99,9 @@ io.on('connection', (socket) => {
     socket.broadcast.emit('archivoCompartido', archivo);
   });
 
-  socket.on('escribiendo', (escribiendo) => {
-    socket.broadcast.emit('escribiendo', escribiendo);
-  }
-  );
+  socket.on('escribiendo', (nick) => {
+    socket.broadcast.emit('escribiendo', nick);
+  });
 
   socket.on("entrarRoom", (room) => {
     socket.join(room);

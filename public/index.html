@@ -30,27 +30,34 @@
         <div id="chat">
             <aside id="sideBar">
                 <div id="barraDeFerramentas">
-                    <!-- <button onclick="cerrarSesion()">Cerrar Sesión</button> -->
                     <div class="misDatos">
                         <div class="contenedorImg">
                             <img src="" class="fotoUsuario" id="miimagen" alt="Imagem do avatar 1">
                         </div>
                         <p id="miusuario"></p>
                     </div>
-                    <div class='auxIcon'>
-                        <i class="fas fa-spinner"></i>
-                        <i class="fas fa-comment-alt"></i>
-                        <i class="fas fa-ellipsis-v"></i>
-                    </div>
                 </div>
                 <div id="containerPesquisa">
                     <i id="porcurarContato" class="fas fa-search"></i>
                     <input type="text" name="search" id="procura" placeholder="Procurar ou começar uma nova conversa">
                 </div>
-                <div id="containerContatos">
-                    <div class="boxContato chatAtivo">
+                <div id="containerContatos" >
+                    <div class="boxContato" onclick="entrarGeneral()">
                         <img src="./img/avatar2.png" alt="Imagem do avatar 2" class="fotoUsuario">
-                        <div class="ifoUsuario" onclick="entrarSala1()">
+                        <div class="ifoUsuario">
+                            <p class="nomeUsuario">General</p>
+                            <p class="previewMenssage">
+                                <i class="fas fa-check-double"></i> 
+                                ¡Bienvenido!
+                            </p>
+                        </div>
+                        <div class="infoMenssage">
+                            <p class="horario">22:40</p>
+                        </div>
+                    </div>
+                    <div class="boxContato" onclick="entrarSala1()">
+                        <img src="./img/avatar2.png" alt="Imagem do avatar 2" class="fotoUsuario">
+                        <div class="ifoUsuario">
                             <p class="nomeUsuario">Sala 1</p>
                             <p class="previewMenssage">
                                 <i class="fas fa-check-double"></i> 
@@ -61,9 +68,9 @@
                             <p class="horario">22:40</p>
                         </div>
                     </div>
-                    <div class="boxContato">
+                    <div class="boxContato" onclick="entrarSala2()">
                         <img src="./img/avatar3.png" alt="Imagem do avatar 2" class="fotoUsuario">
-                        <div class="ifoUsuario" onclick="entrarSala2()">
+                        <div class="ifoUsuario">
                             <p class="nomeUsuario">Sala 2</p>
                             <p class="previewMenssage">
                                 Está disponível para um novo emprego?
@@ -81,17 +88,16 @@
                     </div>
                 </div>
             </aside>
-            <main id="chatArea">
+
+            <main id="chatArea" class="containerChat">
                 <nav id="chatNavBar">
                     <div id="containerContactInfo">
                         <img src="./img/avatar2.png" alt="Imagem do avatar 2" class="fotoUsuario">
-                        <p class="nomeUsuario">Sala 1</p>
+                        <p class="nomeUsuario">General</p>
                     </div>
-                    <ul id="containerFerramentasChat">
-                        <li><i class="fas fa-search"></i></li>
-                        <li><i class="fas fa-paperclip"></i></li>
-                        <li><i class="fas fa-ellipsis-v"></i></li>
-                    </ul>
+                    <div class="container-escribiendo">
+                        <p id="escribiendo"></p>
+                    </div>
                 </nav>
                 <div id="containerMenssages">
                     <div class="bg-image"></div>
@@ -111,6 +117,65 @@
 
                 </div>
             </main>
+
+            <main id="sala1" class="containerChat">
+                <nav id="chatNavBar">
+                    <div id="containerContactInfo">
+                        <img src="./img/avatar2.png" alt="Imagem do avatar 2" class="fotoUsuario">
+                        <p class="nomeUsuario">Sala 1</p>
+                    </div>
+                    <div class="container-escribiendo">
+                        <p id="escribiendo"></p>
+                    </div>
+                </nav>
+                <div id="containerMenssages">
+                    <div class="bg-image"></div>
+                    <div class="chatMenssages">
+                        <!-- <p class="remetenteMenssage">Oi, tudo bem?</p>
+                        <p class="destinMenssage">Oi, tudo bem?</p> -->
+                        <ul id="mensajes" class="mensajesbox">
+                            
+                        </ul>
+                    </div>
+                </div>
+                <div class="containerEnviarMenssage">
+                    <i class="fas fa-grin"></i>
+                    <input type="text" name="menssage" class="inputMenssage" id="mensajesala1" placeholder="Escribe un mensaje...">
+                    <i class="fas fa-paperclip" onclick="compartirArchivo()"><input type="file" name="" id="fichero"></i>
+                    <i class="fas fa-paper-plane" onclick="enviarRoom(sala1)"></i>
+
+                </div>
+            </main>
+
+            <main id="sala2" class="containerChat">
+                <nav id="chatNavBar">
+                    <div id="containerContactInfo">
+                        <img src="./img/avatar2.png" alt="Imagem do avatar 2" class="fotoUsuario">
+                        <p class="nomeUsuario">Sala 2</p>
+                    </div>
+                    <div class="container-escribiendo">
+                        <p id="escribiendo"></p>
+                    </div>
+                </nav>
+                <div id="containerMenssages">
+                    <div class="bg-image"></div>
+                    <div class="chatMenssages">
+                        <!-- <p class="remetenteMenssage">Oi, tudo bem?</p>
+                        <p class="destinMenssage">Oi, tudo bem?</p> -->
+                        <ul id="mensajes" class="mensajesbox">
+                            
+                        </ul>
+                    </div>
+                </div>
+                <div class="containerEnviarMenssage">
+                    <i class="fas fa-grin"></i>
+                    <input type="text" name="menssage" class="inputMenssage" id="mensajesala2" placeholder="Escribe un mensaje...">
+                    <i class="fas fa-paperclip" onclick="compartirArchivo()"><input type="file" name="" id="fichero"></i>
+                    <i class="fas fa-paper-plane" onclick="enviarRoom(sala2)"></i>
+
+                </div>
+            </main>
+
         </div>
         
         <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>

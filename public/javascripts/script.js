@@ -1,8 +1,14 @@
 let auth;
 let user;
+let salaActual = '';
+let login = document.getElementById('login');
+let chat = document.getElementById('chat');
+let chatArea = document.getElementById('chatArea');
+let sala1 = document.getElementById('sala1');
+let sala2 = document.getElementById('sala2');
 
 window.onload = () => {
-    var login = false;
+
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
     auth = firebase.auth();
@@ -15,63 +21,62 @@ window.onload = () => {
         user = currentUser;
       } else {
         console.log('No hay ningún usuario con la sesión iniciada');
-        document.getElementById('login').style.display = 'block';
-        document.getElementById('chat').style.display = 'none';
-        document.getElementById('sala1').style.display = 'none';
-        document.getElementById('sala2').style.display = 'none';
+        login.style.display = 'block';
+        chat.style.display = 'none';
+        sala1.style.display = 'none';
+        sala2.style.display = 'none';
         user = null;
       }
     });
 
-    if (user) {
-        login = true;
-        document.getElementById('login').style.display = 'none';
-        document.getElementById('chat').style.display = 'block';
-        document.getElementById('sala1').style.display = 'none';
-        document.getElementById('sala2').style.display = 'none';
-    } else {
-      login = false;
-    }
-
-    if (login) {
-        document.getElementById('login').style.display = 'block';
-        document.getElementById('chat').style.display = 'none';
-        document.getElementById('sala1').style.display = 'none';
-        document.getElementById('sala2').style.display = 'none';
-    }
     recibir();
 }
 
 window.addEventListener('beforeunload', (event) => {
   auth.signOut().then(() => {
-    document.getElementById('login').style.display = 'block';
-    document.getElementById('chat').style.display = 'none';
-    document.getElementById('sala1').style.display = 'none';
-    document.getElementById('sala2').style.display = 'none';
+    login.style.display = 'block';
+    chat.style.display = 'none';
+    sala1.style.display = 'none';
+    sala2.style.display = 'none';
   });
 });
+
 
 const socket = io();
 const mensajes = document.getElementById('mensajes');
 const room = 'Sala1';
 const room2 = 'Sala2';
 
+function entrarGeneral() {
+  salaActual = 'general';
+  mensajes.innerHTML = '';
+  login.style.display = 'none';
+  chat.style.display = 'block';
+  chatArea.style.display = 'block';
+  sala1.style.display = 'none';
+  sala2.style.display = 'none';
+}
 
 function entrarSala1() {
+  salaActual = 'sala1';
   mensajes.innerHTML = '';
   socket.emit('entrarRoom', room);
-  login = false;
-  chat = false;
-  sala1 = true;
-  sala2 = false;
+  login.style.display = 'none';
+  chat.style.display = 'block';
+  chatArea.style.display = 'none';
+  sala1.style.display = 'block';
+  sala2.style.display = 'none';
+
 }
 function entrarSala2() {
+  salaActual = 'sala2';
   mensajes.innerHTML = '';
   socket.emit('entrarRoom', room2);
-  login = false;
-  chat = false;
-  sala1 = false;
-  sala2 = true;
+  login.style.display = 'none';
+  chat.style.display = 'block';
+  chatArea.style.display = 'none';
+  sala1.style.display = 'none';
+  sala2.style.display = 'block';
 }
 socket.on("mensajeEnRoom", (msg) => {
   console.log(msg);
@@ -79,12 +84,13 @@ socket.on("mensajeEnRoom", (msg) => {
 function enviar() {
     const input = document.getElementById('mensaje'); 
     console.log(input.value);
+    const mensaje = input.value.trim();
     if (input.value === '') {
       return;
     }
     const listaMensajes = document.getElementById('mensajes');
-    socket.emit('mensaje', input.value);
-
+    // socket.emit('mensaje', input.value);
+    socket.emit('mensaje', { mensaje, sala: salaActual });
 
     const nuevoMensaje = document.createElement('li');
     nuevoMensaje.setAttribute('class', 'destinMenssage');
@@ -95,6 +101,33 @@ function enviar() {
     mensajesbox.scrollTop = mensajesbox.scrollHeight;
 
     input.value = '';
+}
+
+function enviarRoom(room) {
+  let input;
+  if (room == 'sala1') {
+    input = document.getElementById('mensajesala1'); 
+  }
+  else if (room == 'sala2') {
+    input = document.getElementById('mensajesala2');
+  }
+  console.log(input.value);
+  if (input.value === '') {
+    return;
+  }
+  const listaMensajes = document.getElementById('mensajes');
+  
+  socket.emit('mensajeEnRoom', { mensaje: input.value, room: room });
+
+  const nuevoMensaje = document.createElement('li');
+  nuevoMensaje.setAttribute('class', 'destinMenssage');
+  nuevoMensaje.textContent = input.value;
+  listaMensajes.appendChild(nuevoMensaje);
+
+  let mensajesbox = document.querySelector('.mensajesbox');
+  mensajesbox.scrollTop = mensajesbox.scrollHeight;
+
+  input.value = '';
 }
 
 function enviaremoji() {
@@ -128,6 +161,34 @@ input.addEventListener('keyup', (e) => {
       enviar();
     }
 });
+
+
+let escribiendoTimeout;
+
+input.addEventListener('input', () => {
+  clearTimeout(escribiendoTimeout);
+  escribiendo();
+  escribiendoTimeout = setTimeout(() => {
+    socket.emit('escribiendo', null);
+  }, 2000);
+});
+
+socket.on('escribiendo', (nick) => {
+  console.log(nick + ' está escribiendo');
+  let escribiendo = document.getElementById('escribiendo');
+  if (nick) {
+    escribiendo.textContent = nick + ' está escribiendo...';
+  } else {
+    escribiendo.textContent = '';
+  }
+});
+
+function escribiendo() {
+  socket.emit('escribiendo', auth.currentUser.displayName);
+}
+function dejoDeEscribir() {
+  socket.emit('dejoDeEscribir', auth.currentUser.displayName);
+}
 
 const avatar = document.querySelectorAll('.avatar');
 avatar.forEach(avatar => {
@@ -217,8 +278,8 @@ function enviarAvatar() {
 
 const subirAvatar = document.getElementById('subirAvatar');
   const elegirAvatar = document.getElementById('elegirAvatar');
-  // const endpoint = 'http://localhost:3000/upload';
-  const endpoint = 'https://whatsappclone-nodejs.onrender.com/upload';
+  const endpoint = 'http://localhost:3000/upload';
+  // const endpoint = 'https://whatsappclone-nodejs.onrender.com/upload';
   subirAvatar.addEventListener('click', () => {
     const file = elegirAvatar.files[0];
     const formData = new FormData();
@@ -358,16 +419,4 @@ function configurarUsuario(user){
   document.getElementById('sala2').style.display = 'none';
 }
 
-function cerrarSesion() {
-  auth.signOut()
-  .then(() => {
-    socket.emit('cierraSesion', { nick: user.displayName });
-    console.log(user);
-    login = false;
-    user = null;
-    document.getElementById('login').style.display = 'block';
-    document.getElementById('chat').style.display = 'none';
-    document.getElementById('sala1').style.display = 'none';
-    document.getElementById('sala2').style.display = 'none';
-  });
-}
+
