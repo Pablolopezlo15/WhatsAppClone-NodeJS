@@ -55,7 +55,7 @@
                             <p class="horario">22:40</p>
                         </div>
                     </div>
-                    <div class="boxContato" onclick="entrarSala1()">
+                    <div class="boxContato" onclick="entrarsala1()">
                         <img src="./img/avatar2.png" alt="Imagem do avatar 2" class="fotoUsuario">
                         <div class="ifoUsuario">
                             <p class="nomeUsuario">Sala 1</p>
@@ -68,7 +68,7 @@
                             <p class="horario">22:40</p>
                         </div>
                     </div>
-                    <div class="boxContato" onclick="entrarSala2()">
+                    <div class="boxContato" onclick="entrarsala2()">
                         <img src="./img/avatar3.png" alt="Imagem do avatar 2" class="fotoUsuario">
                         <div class="ifoUsuario">
                             <p class="nomeUsuario">Sala 2</p>
@@ -160,6 +160,32 @@
                     <input type="text" name="menssage" class="inputMenssage" id="mensajesala2" placeholder="Escribe un mensaje...">
                     <i class="fas fa-paperclip" onclick="compartirArchivo()"><input type="file" name="" id="fichero"></i>
                     <i class="fas fa-paper-plane" onclick="enviarRoom()"></i>
+
+                </div>
+            </main>
+
+
+            <main id="salaPrivada" class="containerChat">
+                <nav id="chatNavBar">
+                    <div id="containerContactInfo">
+                        <img src="./img/avatar2.png" id="avatarusuario" alt="Imagem do avatar 2" class="fotoUsuario">
+                        <p class="nomeUsuario" id="nombreusuario"></p>
+                    </div>
+                    <div class="container-escribiendo">
+                        <p id="escribiendo"></p>
+                    </div>
+                </nav>
+                <div id="containerMenssages">
+                    <div class="bg-image"></div>
+                    <div class="chatMenssages" id="chatMensajes">
+                        <!-- <ul id="mensajes-sala2" class="mensajesbox"></ul> -->
+                    </div>
+                </div>
+                <div class="containerEnviarMenssage">
+                    <i class="fas fa-grin"></i>
+                    <input type="text" name="menssage" class="inputMenssage" id="mensajePrivado" placeholder="Escribe un mensaje...">
+                    <i class="fas fa-paperclip" onclick="compartirArchivo()"><input type="file" name="" id="fichero"></i>
+                    <i class="fas fa-paper-plane" id="enviarmensajeprivado" onclick="enviarMensajePrivado()"></i>
 
                 </div>
             </main>

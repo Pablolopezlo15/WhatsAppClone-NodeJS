@@ -108,7 +108,7 @@ io.on('connection', (socket) => {
     let user = usuarios.find(usuario => usuario.id === socket.id);
     if (user) {
       user.room = room;
-      io.emit("mensajeEnRoom", "Usuario " + user.nick + " ha entrado en la sala " + room);
+      io.emit("mensajeEnRoom", room);
       console.log("Usuario " + user.nick + " ha entrado en la sala " + room);
     }
   });
@@ -129,6 +129,30 @@ io.on('connection', (socket) => {
       console.log("Mensaje enviado en la sala " + datos.room + ": ", datos);
       socket.to(datos.room).emit("mensajeEnRoom", datos);
     }
+  });
+
+  // Cuando un usuario envía un mensaje privado
+  socket.on("mensajePrivado", ({ receptorID, mensaje }) => {
+    console.log("Mensaje privado de " + socket.nick + " a " + receptorID + ": " + mensaje);
+    // Buscamos al usuario que envía el mensaje
+    const emisor = usuarios.find((usuario) => usuario.id === socket.id);
+    // Buscamos al usuario que recibe el mensaje
+    const receptor = usuarios.find((usuario) => usuario.id === receptorID);
+    // Si el emisor y el receptor existen
+    datos = {
+      receptor: receptor,
+      nick: socket.nick,
+      avatar: socket.avatar,
+      mensaje: mensaje,
+      hora: new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })
+    }
+    if (emisor && receptor) {
+      // Emitimos el mensaje privado al receptor
+      io.to(receptorID).emit("mensajePrivado", datos);
+    }
+
+
+
   });
 
 

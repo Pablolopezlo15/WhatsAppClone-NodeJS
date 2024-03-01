@@ -6,6 +6,7 @@ let chat = document.getElementById('chat');
 let chatArea = document.getElementById('chatArea');
 let sala1 = document.getElementById('sala1');
 let sala2 = document.getElementById('sala2');
+let salaPrivada = document.getElementById('salaPrivada');
 
 window.onload = () => {
 
@@ -25,6 +26,7 @@ window.onload = () => {
         chat.style.display = 'none';
         sala1.style.display = 'none';
         sala2.style.display = 'none';
+        salaPrivada.style.display = 'none';
         user = null;
       }
     });
@@ -38,6 +40,7 @@ window.addEventListener('beforeunload', (event) => {
     chat.style.display = 'none';
     sala1.style.display = 'none';
     sala2.style.display = 'none';
+    salaPrivada.style.display = 'none';
   });
 });
 
@@ -54,9 +57,10 @@ function entrarGeneral() {
   chatArea.style.display = 'block';
   sala1.style.display = 'none';
   sala2.style.display = 'none';
+  salaPrivada.style.display = 'none';
 }
 
-function entrarSala1() {
+function entrarsala1() {
   salaActual = 'sala1';
   socket.emit('entrarRoom', room);
   login.style.display = 'none';
@@ -64,9 +68,9 @@ function entrarSala1() {
   chatArea.style.display = 'none';
   sala1.style.display = 'block';
   sala2.style.display = 'none';
-
+  salaPrivada.style.display = 'none';
 }
-function entrarSala2() {
+function entrarsala2() {
   salaActual = 'sala2';
   socket.emit('entrarRoom', room2);
   login.style.display = 'none';
@@ -74,10 +78,9 @@ function entrarSala2() {
   chatArea.style.display = 'none';
   sala1.style.display = 'none';
   sala2.style.display = 'block';
+  salaPrivada.style.display = 'none';
 }
-socket.on("mensajeEnRoom", (msg) => {
-  console.log(msg);
-});
+
 function enviar() {
     const input = document.getElementById('mensaje'); 
     console.log(input.value);
@@ -115,6 +118,57 @@ function enviarRoom() {
 
   input.value = '';
 }
+
+function entrarSalaPrivada(usuario) {
+  login.style.display = 'none';
+  chat.style.display = 'block';
+  chatArea.style.display = 'none';
+  sala1.style.display = 'none';
+  sala2.style.display = 'none';
+  salaPrivada.style.display = 'block';
+
+  nombreusuario = document.getElementById('nombreusuario');
+  nombreusuario.textContent = usuario.nick;
+
+  avatarusuario = document.getElementById('avatarusuario');
+  avatarusuario.setAttribute('src', usuario.avatar);
+
+  let chatMensajes = document.getElementById('chatMensajes');
+  let mensajesUsuarioID = 'mensajes-' + usuario.id;
+  let mensajesUsuarioExistente = document.getElementById(mensajesUsuarioID);
+  if (mensajesUsuarioExistente) {
+    mensajesUsuarioExistente.remove();
+  }
+
+  let usuarioIDContainer = document.createElement('ul');
+  usuarioIDContainer.setAttribute('class', 'chatPrivados mensajesbox');
+  usuarioIDContainer.setAttribute('id', mensajesUsuarioID);
+
+  const enviarmensajeprivado = document.getElementById('enviarmensajeprivado');
+  enviarmensajeprivado.setAttribute('onclick', `enviarPrivado('${usuario.id}')`);
+
+  chatMensajes.appendChild(usuarioIDContainer);
+
+  socket.emit('entrarRoom', usuario.id);
+}
+
+function enviarPrivado(usuarioID) {
+  const listaMensajes = document.getElementById('mensajes-'+usuarioID);
+  const input = document.getElementById('mensajePrivado');
+  // socket.emit('mensajePrivado', { mensaje: input.value, room: usuarioID });
+  socket.emit('mensajePrivado', { mensaje: input.value, receptorID: usuarioID });
+  const nuevoMensaje = document.createElement('li');
+  nuevoMensaje.setAttribute('class', 'destinMenssage');
+  nuevoMensaje.textContent = input.value;
+  listaMensajes.appendChild(nuevoMensaje);
+
+  let mensajesbox = document.getElementById('mensajes-'+usuarioID);
+  mensajesbox.scrollTop = mensajesbox.scrollHeight;
+
+  input.value = '';
+}
+
+
 
 function enviaremoji() {
     const inputemoji = document.getElementById('emoji');
@@ -233,6 +287,7 @@ function recibir() {
 
     socket.on('mensajeEnRoom', (msg) => {
       console.log(msg);
+      let sala = msg.room;
       const mensajeRecibido = document.createElement('li');
       mensajeRecibido.setAttribute('class', 'remetenteMenssage');
       // Crear elementos HTML para mostrar el mensaje
@@ -257,7 +312,39 @@ function recibir() {
       mensajeRecibido.appendChild(contenidoMensaje);
     
       // Agregar mensaje recibido a la lista de mensajes
-      const listaMensajes = document.getElementById('mensajes-sala1'); // Asegúrate de tener una lista de mensajes específica para cada sala
+      const listaMensajes = document.getElementById('mensajes-'+sala); // Asegúrate de tener una lista de mensajes específica para cada sala
+      listaMensajes.appendChild(mensajeRecibido);
+      // Desplazar la lista de mensajes al final
+      listaMensajes.scrollTop = listaMensajes.scrollHeight;
+    });
+
+    socket.on('mensajePrivado', (datos) => {
+      console.log(datos);
+      const mensajeRecibido = document.createElement('li');
+      mensajeRecibido.setAttribute('class', 'remetenteMenssage');
+      // Crear elementos HTML para mostrar el mensaje
+    
+      const contenidoMensaje = document.createElement('div');
+      contenidoMensaje.classList.add('contenido-mensaje');
+    
+      const nick = document.createElement('p');
+      nick.textContent = datos.nick;
+      nick.classList.add('nick');
+    
+      const mensaje = document.createElement('p');
+      mensaje.textContent = datos.mensaje;
+    
+      const hora = document.createElement('p');
+      hora.textContent = datos.hora;
+    
+      // Agregar elementos al mensaje recibido
+      contenidoMensaje.appendChild(nick);
+      contenidoMensaje.appendChild(mensaje);
+      contenidoMensaje.appendChild(hora);
+      mensajeRecibido.appendChild(contenidoMensaje);
+    
+      // Agregar mensaje recibido a la lista de mensajes
+      const listaMensajes = document.getElementById('mensajes-' + datos.receptor.id); // Asegúrate de tener una lista de mensajes específica para cada usuario
       listaMensajes.appendChild(mensajeRecibido);
     
       // Desplazar la lista de mensajes al final
@@ -341,6 +428,7 @@ socket.on('usuarios', (usuarios) => {
   listaUsuarios.innerHTML = '';
 
   usuarios.forEach((usuario) => {
+    console.log(usuario);
     // Crear los elementos
     let boxContato = document.createElement('div');
     let img = document.createElement('img');
@@ -367,8 +455,8 @@ socket.on('usuarios', (usuarios) => {
 
 
     img.setAttribute('alt', 'Imagem do avatar 2');
-    ifoUsuario.setAttribute('onclick', 'entrarSala2()');
 
+    ifoUsuario.setAttribute('onclick', `entrarSalaPrivada(${JSON.stringify(usuario)})`);
     // Añadir el texto a los elementos
     nomeUsuario.textContent = usuario.nick;
     previewMenssage.textContent = '-';
@@ -415,11 +503,16 @@ function configurarUsuario(user){
 
   let inputavatar = document.getElementById('elegirAvatar');
   let  miImagen = document.getElementById('miimagen');
-
-  let nick = user.displayName;
-  let avatar;
   
-  if (inputavatar.value === '') {
+  let nick;
+  let avatar;
+
+  if (user) {
+    nick = user.displayName;
+  }
+
+  
+  if (inputavatar.value === '' && user) {
     avatar = user.photoURL;
   } else {
     let filename = inputavatar.files[0].name;
