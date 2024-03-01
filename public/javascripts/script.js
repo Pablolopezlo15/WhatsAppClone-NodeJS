@@ -460,22 +460,36 @@ const subirAvatar = document.getElementById('subirAvatar');
     });
   });
 
-function compartirArchivo() {
+  document.getElementById('fichero').addEventListener('change', compartirArchivo);
+
+  function compartirArchivo() {
     const input = document.getElementById('fichero');
-    console.log(input.value);
-    socket.emit('archivoCompartido', input.value);
-    console.log("Archivo compartido: "+ input.value);
-    input.value = '';
-}
-
-function recibirArchivo(){
-  listaMensajes = document.getElementById('mensajes');
-  const img = document.createElement('img');
-  img.setAttribute('src', 'uploads/' + msg);
-  img.setAttribute('class', 'emojis');
-  listaMensajes.appendChild(img);
-
-}
+    const file = input.files[0];
+    const formData = new FormData();
+    formData.append('fichero', file);
+  
+    fetch('http://localhost:3000/uploadArchivo', {
+      method: 'POST',
+      body: formData
+    })
+    .then(response => response)
+    .then(data => {
+      console.log(data);
+      socket.emit('archivoCompartido', file.name);
+      input.value = '';
+    })
+    .catch(error => {
+      console.error(error);
+    });
+  }
+  
+  function recibirArchivo(msg){
+    const listaMensajes = document.getElementById('mensajes');
+    const img = document.createElement('img');
+    img.setAttribute('src', 'uploads/' + msg);
+    img.setAttribute('class', 'emojis');
+    listaMensajes.appendChild(img);
+  }
 
 socket.on('usuarios', (usuarios) => {
   const user = auth.currentUser;
