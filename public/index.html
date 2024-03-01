@@ -19,10 +19,26 @@
         <div id="login">
             <button onclick="iniciarSesionGoogle()">Google</button>
             <button onclick="iniciarSesionGitHub()">Github</button>
+            <button onclick="iniciarSesionFacebook()">Facebook</button>
             <p>Elige tu estado</p>
             <input type="text" id="estado">
             <input type="file" id="elegirAvatar" name="avatar">
             <button id="subirAvatar">Subir Avatar</button>
+
+            <form class="registrarse">
+                <input type="text" id="nombre" placeholder="Nombre">
+                <input type="email" id="email-registro" placeholder="Email">
+                <input type="password" id="password-registro" placeholder="Contraseña">
+                <button type="button" onclick="registrarse()">Registrarse</button>
+            </form>
+
+            <form class="inciosesion">
+                <input type="email" id="email" placeholder="Email">
+                <input type="password" id="password" placeholder="Contraseña">
+                <button type="button" onclick="iniciarSesion()">Iniciar Sesion</button>
+            </form>
+
+
         </div>
 
 
@@ -178,7 +194,7 @@
                 <div id="containerMenssages">
                     <div class="bg-image"></div>
                     <div class="chatMenssages" id="chatMensajes">
-                        <!-- <ul id="mensajes-sala2" class="mensajesbox"></ul> -->
+
                     </div>
                 </div>
                 <div class="containerEnviarMenssage">

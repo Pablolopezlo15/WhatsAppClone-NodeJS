@@ -133,28 +133,31 @@ io.on('connection', (socket) => {
 
   // Cuando un usuario envía un mensaje privado
   socket.on("mensajePrivado", ({ receptorID, mensaje }) => {
-    console.log("Mensaje privado de " + socket.nick + " a " + receptorID + ": " + mensaje);
     // Buscamos al usuario que envía el mensaje
     const emisor = usuarios.find((usuario) => usuario.id === socket.id);
     // Buscamos al usuario que recibe el mensaje
     const receptor = usuarios.find((usuario) => usuario.id === receptorID);
     // Si el emisor y el receptor existen
+
+    let salas = [];
+    socket.rooms.forEach(room => {
+      salas.push(room);
+    });
     datos = {
       receptor: receptor,
+      emisor: socket.id,
       nick: socket.nick,
       avatar: socket.avatar,
       mensaje: mensaje,
+      salas: salas,
       hora: new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })
     }
+    
     if (emisor && receptor) {
-      // Emitimos el mensaje privado al receptor
       io.to(receptorID).emit("mensajePrivado", datos);
     }
 
-
-
   });
-
 
 });
 

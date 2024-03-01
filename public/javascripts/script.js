@@ -135,19 +135,30 @@ function entrarSalaPrivada(usuario) {
 
   let chatMensajes = document.getElementById('chatMensajes');
   let mensajesUsuarioID = 'mensajes-' + usuario.id;
-  let mensajesUsuarioExistente = document.getElementById(mensajesUsuarioID);
-  if (mensajesUsuarioExistente) {
-    mensajesUsuarioExistente.remove();
+
+
+
+  let chatsPrivados = document.getElementsByClassName('chatPrivados');
+  for (let i = 0; i < chatsPrivados.length; i++) {
+    chatsPrivados[i].style.display = 'none';
   }
 
-  let usuarioIDContainer = document.createElement('ul');
-  usuarioIDContainer.setAttribute('class', 'chatPrivados mensajesbox');
-  usuarioIDContainer.setAttribute('id', mensajesUsuarioID);
+  let usuarioIDContainer = document.getElementById(mensajesUsuarioID);
+  if (!usuarioIDContainer) {
+    // Si no existe, crea uno nuevo
+    usuarioIDContainer = document.createElement('ul');
+    usuarioIDContainer.setAttribute('class', 'chatPrivados mensajesbox');
+    usuarioIDContainer.setAttribute('id', mensajesUsuarioID);
+    chatMensajes.appendChild(usuarioIDContainer);
+  }
+
+
 
   const enviarmensajeprivado = document.getElementById('enviarmensajeprivado');
   enviarmensajeprivado.setAttribute('onclick', `enviarPrivado('${usuario.id}')`);
-
-  chatMensajes.appendChild(usuarioIDContainer);
+  
+  usuarioIDContainer.style.display = 'block';
+  // chatMensajes.appendChild(usuarioIDContainer);
 
   socket.emit('entrarRoom', usuario.id);
 }
@@ -167,6 +178,8 @@ function enviarPrivado(usuarioID) {
 
   input.value = '';
 }
+
+
 
 
 
@@ -314,12 +327,18 @@ function recibir() {
       // Agregar mensaje recibido a la lista de mensajes
       const listaMensajes = document.getElementById('mensajes-'+sala); // Asegúrate de tener una lista de mensajes específica para cada sala
       listaMensajes.appendChild(mensajeRecibido);
+
       // Desplazar la lista de mensajes al final
       listaMensajes.scrollTop = listaMensajes.scrollHeight;
     });
 
     socket.on('mensajePrivado', (datos) => {
+      if (socket.id === datos.receptor.id) {
+        console.log("No puedes enviarte un mensaje a ti mismo");
+        return;
+      }
       console.log(datos);
+
       const mensajeRecibido = document.createElement('li');
       mensajeRecibido.setAttribute('class', 'remetenteMenssage');
       // Crear elementos HTML para mostrar el mensaje
@@ -344,7 +363,7 @@ function recibir() {
       mensajeRecibido.appendChild(contenidoMensaje);
     
       // Agregar mensaje recibido a la lista de mensajes
-      const listaMensajes = document.getElementById('mensajes-' + datos.receptor.id); // Asegúrate de tener una lista de mensajes específica para cada usuario
+      const listaMensajes = document.getElementById('mensajes-' + datos.receptor.id);
       listaMensajes.appendChild(mensajeRecibido);
     
       // Desplazar la lista de mensajes al final
@@ -498,6 +517,48 @@ function iniciarSesionGitHub() {
   });
 }
 
+function iniciarSesionFacebook() {
+  const provider = new firebase.auth.FacebookAuthProvider();
+  auth.signInWithPopup(provider)
+  .then((result) => {
+    const user = result.user;
+    let nick = user.displayName;
+    configurarUsuario(user);
+  });
+}
+
+function iniciarSesion(){
+  const email = document.getElementById('email').value;
+  const password = document.getElementById('password').value;
+  auth.signInWithEmailAndPassword(email, password)
+  .then((userCredential) => {
+    const user = userCredential.user;
+    configurarUsuario(user);
+  })
+  .catch((error) => {
+    console.log(error);
+  });
+}
+
+function registrarse(){
+  const nombre = document.getElementById('nombre').value;
+  const email = document.getElementById('email-registro').value;
+  const password = document.getElementById('password-registro').value;
+  auth.createUserWithEmailAndPassword(email, password)
+  .then((userCredential) => {
+    return userCredential.user.updateProfile({
+      displayName: nombre
+    }).then(() => userCredential.user);
+  })
+  .then((user) => {
+    console.log(user);
+    configurarUsuario(user);
+  })
+  .catch((error) => {
+    console.log(error);
+  });
+}
+
 
 function configurarUsuario(user){
 
@@ -514,6 +575,9 @@ function configurarUsuario(user){
   
   if (inputavatar.value === '' && user) {
     avatar = user.photoURL;
+    if (user.photoURL === null) {
+      avatar = './img/avatarDefault.png';
+    }
   } else {
     let filename = inputavatar.files[0].name;
     avatar = './archivosComp/' + filename;
