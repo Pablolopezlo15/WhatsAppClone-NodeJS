@@ -493,3 +493,24 @@ ul {
     font-size: 12px;
     margin-top: 5px;
 }
+
+.emoji-picker {
+    position: absolute;
+    background-color: aliceblue;
+    bottom: 60px;
+    width: 200px;
+    display: flex;
+    flex-wrap: wrap;
+    z-index: 1;
+    padding: 0; /* Asegúrate de que no haya padding en el contenedor */
+    list-style: none; /* Elimina los bullets de la lista */
+}
+
+.emoji-picker li {
+    display: block;
+    width: 22px;
+    height: 22px;
+}
+.emoticono{
+    width: 22px;
+}

@@ -32,6 +32,42 @@ window.onload = () => {
       }
     });
 
+
+  const buttons = [
+    document.getElementById('emoji-button-general'),
+    document.getElementById('emoji-button-sala1'),
+    document.getElementById('emoji-button-sala2'),
+    document.getElementById('emoji-button-privado')
+  ];
+  const pickers = [
+    document.getElementById('emoji-picker-general'),
+    document.getElementById('emoji-picker-sala1'),
+    document.getElementById('emoji-picker-sala2'),
+    document.getElementById('emoji-picker-privado')
+  ];
+  const inputs = [
+    document.getElementById('mensaje'),
+    document.getElementById('mensajesala1'),
+    document.getElementById('mensajesala2'),
+    document.getElementById('mensajePrivado')
+  ];
+
+  // Mostrar el selector cuando se hace clic en un botón
+  buttons.forEach((button, index) => {
+    button.addEventListener('click', () => {
+      pickers[index].style.display = pickers[index].style.display === 'none' ? 'flex' : 'none';
+    });
+  });
+
+  // Insertar el emoji seleccionado en el input
+  pickers.forEach((picker, index) => {
+    picker.addEventListener('click', event => {
+      if (event.target.tagName === 'LI') {
+        inputs[index].value += event.target.textContent;
+      }
+    });
+  });
+
     recibir();
 }
 
