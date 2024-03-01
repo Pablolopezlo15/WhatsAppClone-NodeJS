@@ -7,6 +7,7 @@ let chatArea = document.getElementById('chatArea');
 let sala1 = document.getElementById('sala1');
 let sala2 = document.getElementById('sala2');
 let salaPrivada = document.getElementById('salaPrivada');
+let errorPorCorreoExisitente = document.getElementById('errorPorCorreoExisitente');
 
 window.onload = () => {
 
@@ -504,6 +505,17 @@ function iniciarSesionGoogle() {
     const user = result.user;
     let nick = user.displayName;
     configurarUsuario(user);
+  })
+  .catch((error) => {
+    console.log(error);
+    const errorCode = error.code;
+    const errorMessage = error.message;
+    // The email of the user's account used.
+    const email = error.customData.email;
+    // The AuthCredential type that was used.
+    if (error.code === 'auth/account-exists-with-different-credential') {
+      errorPorCorreoExisitente.textContent = 'Ya existe un usuario con la misma dirección de correo electrónico pero con diferentes credenciales de inicio de sesión.';
+    }
   });
 }
 
@@ -514,7 +526,18 @@ function iniciarSesionGitHub() {
     const user = result.user;
     let nick = user.displayName;
     configurarUsuario(user);
-  });
+  })
+  .catch((error) => {
+    console.log(error);
+    const errorCode = error.code;
+    const errorMessage = error.message;
+    // The email of the user's account used.
+    const email = error.customData.email;
+    // The AuthCredential type that was used.
+    if (error.code === 'auth/account-exists-with-different-credential') {
+      errorPorCorreoExisitente.textContent = 'Ya existe un usuario con la misma dirección de correo electrónico pero con diferentes credenciales de inicio de sesión.';
+    }
+  }) ;
 }
 
 function iniciarSesionFacebook() {
@@ -524,7 +547,19 @@ function iniciarSesionFacebook() {
     const user = result.user;
     let nick = user.displayName;
     configurarUsuario(user);
-  });
+  })
+  .catch((error) => {
+    console.log(error);
+    const errorCode = error.code;
+    const errorMessage = error.message;
+    // The email of the user's account used.
+    const email = error.customData.email;
+    // The AuthCredential type that was used.
+    if (error.code === 'auth/account-exists-with-different-credential') {
+      errorPorCorreoExisitente.textContent = 'Ya existe un usuario con la misma dirección de correo electrónico pero con diferentes credenciales de inicio de sesión.';
+    }
+  })
+  ;
 }
 
 function iniciarSesion(){
@@ -537,6 +572,14 @@ function iniciarSesion(){
   })
   .catch((error) => {
     console.log(error);
+    const errorCode = error.code;
+    const errorMessage = error.message;
+    // The email of the user's account used.
+    const email = error.customData.email;
+    // The AuthCredential type that was used.
+    if (error.code === 'auth/account-exists-with-different-credential') {
+      errorPorCorreoExisitente.textContent = 'Ya existe un usuario con la misma dirección de correo electrónico pero con diferentes credenciales de inicio de sesión.';
+    }
   });
 }
 
@@ -555,15 +598,22 @@ function registrarse(){
     configurarUsuario(user);
   })
   .catch((error) => {
+    const errorCode = error.code;
+    const errorMessage = error.message;
+    // The email of the user's account used.
+    const email = error.customData.email;
+    // The AuthCredential type that was used.
+    if (error.code === 'auth/account-exists-with-different-credential') {
+      errorPorCorreoExisitente.textContent = 'Ya existe un usuario con la misma dirección de correo electrónico pero con diferentes credenciales de inicio de sesión.';
+    }
     console.log(error);
   });
 }
 
 
 function configurarUsuario(user){
-
   let inputavatar = document.getElementById('elegirAvatar');
-  let  miImagen = document.getElementById('miimagen');
+  let miImagen = document.getElementById('miimagen');
   
   let nick;
   let avatar;
@@ -572,17 +622,41 @@ function configurarUsuario(user){
     nick = user.displayName;
   }
 
-  
   if (inputavatar.value === '' && user) {
     avatar = user.photoURL;
     if (user.photoURL === null) {
       avatar = './img/avatarDefault.png';
     }
+    actualizarPerfilChat(user, nick, avatar, miImagen);
   } else {
-    let filename = inputavatar.files[0].name;
-    avatar = './archivosComp/' + filename;
-  }
+    let file = inputavatar.files[0];
+    let storageRef = firebase.storage().ref('avatars/' + file.name);
+    let uploadTask = storageRef.put(file);
 
+    uploadTask.on('state_changed', function(snapshot){
+      // Puedes usar este bloque para mostrar el progreso de la subida
+    }, function(error) {
+      // Manejar errores de subida
+      console.log(error);
+    }, function() {
+      // Cuando la subida se completa, obtener la URL de la imagen y actualizar el perfil del usuario
+      uploadTask.snapshot.ref.getDownloadURL().then(function(downloadURL) {
+        avatar = downloadURL;
+        user.updateProfile({
+          photoURL: avatar
+        }).then(function() {
+          // Actualizar el perfil del usuario en el chat
+          actualizarPerfilChat(user, nick, avatar, miImagen);
+        }).catch(function(error) {
+          // Manejar errores
+          console.log(error);
+        });
+      });
+    });
+  }
+}
+
+function actualizarPerfilChat(user, nick, avatar, miImagen) {
   socket.emit('nick', nick, avatar);
 
   document.getElementById('miusuario').textContent = nick;
@@ -593,5 +667,3 @@ function configurarUsuario(user){
   document.getElementById('sala1').style.display = 'none';
   document.getElementById('sala2').style.display = 'none';
 }
-
-

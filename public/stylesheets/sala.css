@@ -259,7 +259,9 @@ ul {
     height: 60px;
     line-height: 60px;
 }
-
+#miimagen{
+    aspect-ratio: 1/1;
+}
 .container-escribiendo{
     width: 100%;
     display: flex;
@@ -432,4 +434,62 @@ ul {
     justify-content: space-between;
     align-items: center;
     gap: 0.5rem;
+}
+
+
+
+
+/* Estilos generales */
+.login-container {
+    max-width: 400px;
+    margin: 50px auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    background-color: #f9f9f9;
+    text-align: center;
+}
+
+.login-button {
+    display: inline-block;
+    width: calc(33.33% - 10px);
+    margin: 10px 5px;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.login-text {
+    margin-bottom: 10px;
+    font-size: 14px;
+    color: #333;
+}
+
+.login-input {
+    display: block;
+    width: calc(100% - 20px); /* Ajuste del ancho */
+    margin: 10px auto;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+.upload-button {
+    margin-top: 20px;
+}
+
+/* Estilos para dispositivos móviles */
+@media only screen and (max-width: 600px) {
+    .login-button {
+        width: 100%;
+    }
+}
+
+.error {
+    color: red;
+    font-size: 12px;
+    margin-top: 5px;
 }
