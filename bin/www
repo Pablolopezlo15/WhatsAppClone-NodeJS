@@ -58,8 +58,6 @@ io.on('connection', (socket) => {
     usuarios = usuarios.filter(usuario => usuario.id !== socket.id);
     if (user) {
       io.emit('salidausuarios', user.nick + ' se ha desconectado');
-    } else {
-      io.emit('salidausuarios', 'Un usuario se ha desconectado');
     }
     io.emit("usuarios", usuarios);
   });
