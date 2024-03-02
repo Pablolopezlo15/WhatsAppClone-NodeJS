@@ -500,7 +500,7 @@ const subirAvatar = document.getElementById('subirAvatar');
     const file = input.files[0];
     const formData = new FormData();
     formData.append('fichero', file);
-    const endpoint = 'https://whatsappclone-nodejs.onrender.com/uploadArchivo';
+    const endpoint = 'https://whatsappclone-nodejs.onrender.com/upload';
     // const endpoint = 'http://localhost:3000/uploadArchivo';
     fetch(endpoint, {
       method: 'POST',
