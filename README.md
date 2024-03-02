@@ -28,4 +28,4 @@ Inicio de Sesión con Firebase (Google, GitHub y Facebook)
 ![Inicio de sesión](https://i.imgur.com/C9rF6l4.png)
 
 Chat
-![Chat](https://i.imgur.com/QodYIcu.png)
+![Chat](https://i.imgur.com/h9huFz5.png)
