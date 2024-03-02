@@ -18,9 +18,10 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/archivosComp', express.static(path.join(__dirname, 'public/archivosComp')));
-
-// FILE UPLOAD
 app.use(fileUpload()); 
+
+module.exports = app;
+
 
 app.post('/upload', function(req, res) {
     let sampleFile;
@@ -55,15 +56,18 @@ app.post('/uploadArchivo', function(req, res) {
 
   // The name of the input field (i.e. "fichero") is used to retrieve the uploaded file
   sampleFile = req.files.fichero;
-  uploadPath = __dirname + '/public/archivosComp/' + sampleFile.name;
+  const utf8FileName = sampleFile.name;
+  let archivo = utf8FileName;
+
+  uploadPath = __dirname + '/public/archivosComp/' + archivo;
 
   // Use the mv() method to place the file somewhere on your server
   sampleFile.mv(uploadPath, function(err) {
     if (err)
+    
       return res.status(500).send(err);
 
     res.send('File uploaded!');
   });
 });
 
-module.exports = app;
