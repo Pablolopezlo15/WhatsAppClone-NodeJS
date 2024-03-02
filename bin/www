@@ -63,6 +63,13 @@ io.on('connection', (socket) => {
     io.emit("usuarios", usuarios);
   });
 
+  
+  socket.on('avatar', (avatar) => {
+    socket.avatar = avatar;
+    console.log("El usuario " + socket.nick + " ha cambiado su avatar a " + avatar );
+    socket.broadcast.emit('avatar', avatar);
+  });
+
   socket.on('mensaje', (msg) => {
     let user = usuarios.find(usuario => usuario.id === socket.id);
     if (user) {
@@ -78,24 +85,14 @@ io.on('connection', (socket) => {
     }
   });
 
-
-
-  socket.on('avatar', (avatar) => {
-    socket.avatar = avatar;
-    console.log("El usuario " + socket.nick + " ha cambiado su avatar a " + avatar );
-    socket.broadcast.emit('avatar', avatar);
-  });
-
   socket.on('archivoCompartido', (archivo) => { 
-    console.log("Recibo fichero")
     if (!archivo) {
-      // Emitir un evento de error de vuelta al cliente
       socket.emit('error', 'No files were uploaded.');
       return;
     }
     uploadPath = __dirname + '/public/archivosComp/' + archivo;
     console.log(archivo);
-    socket.archivo = archivo;
+    // socket.archivo = archivo;
     socket.broadcast.emit('archivoCompartido', archivo);
   });
 

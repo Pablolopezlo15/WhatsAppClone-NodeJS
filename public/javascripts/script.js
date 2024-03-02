@@ -217,34 +217,6 @@ function enviarPrivado(usuarioID) {
 }
 
 
-
-
-
-function enviaremoji() {
-    const inputemoji = document.getElementById('emoji');
-    const listaMensajes = document.getElementById('mensajes');
-    socket.emit('mensaje', inputemoji.value);
-
-    const nuevoMensaje = document.createElement('li');
-    const nuevoEmoji = document.createElement('img');
-    nuevoEmoji.setAttribute('src', inputemoji.value);
-    nuevoMensaje.appendChild(nuevoEmoji);
-    nuevoMensaje.setAttribute('class', 'destinMenssage');
-    nuevoEmoji.setAttribute('class', 'emojis');
-    listaMensajes.appendChild(nuevoMensaje);
-
-    inputemoji.value = '';
-}
-
-const emojis = document.querySelectorAll('.emojis');
-emojis.forEach(emoji => {
-    emoji.addEventListener('click', () => {
-        const inputemoji = document.getElementById('emoji');
-        inputemoji.value = emoji.src;
-    });
-});
-
-
 const input = document.getElementById('mensaje');
 input.addEventListener('keyup', (e) => {
     if (e.key === 'Enter') {
@@ -425,16 +397,20 @@ function recibir() {
       listaMensajes.appendChild(mensajeRecibido);
     });
 
-}
+    socket.on('archivoCompartido', (msg) => {
+      console.log(msg);
+      const listaMensajes = document.getElementById('mensajes');
+      const archivo = document.createElement('a');
+      archivo.setAttribute('href', 'uploads/' + msg);
+      archivo.textContent = msg;
+      listaMensajes.appendChild(archivo);
+    });
 
+    socket.on('error', (msg) => {
+      console.log(msg);
+    });
+  
 
-
-function enviarAvatar() {
-    const input = document.getElementById('avatar-input');
-    console.log(input.value);
-    socket.emit('avatar', input.value);
-    console.log("Avatar asignado: "+ input.value);
-    input.value = '';
 }
 
 const subirAvatar = document.getElementById('subirAvatar');
@@ -451,7 +427,7 @@ const subirAvatar = document.getElementById('subirAvatar');
     })
     .then(data => {
       console.log(file.name);
-      alert('File uploaded successfully!');
+      alert('Avatar seleccionado Correctamente, ahora inicia sesión con cualquiera de las opciones.');
       socket.emit('archivoCompartido', file.name);
     })
     .catch(error => {
@@ -474,7 +450,7 @@ const subirAvatar = document.getElementById('subirAvatar');
     })
     .then(response => response)
     .then(data => {
-      console.log(data);
+      console.log(file.name);
       socket.emit('archivoCompartido', file.name);
       input.value = '';
     })
@@ -483,182 +459,169 @@ const subirAvatar = document.getElementById('subirAvatar');
     });
   }
   
-  function recibirArchivo(msg){
-    const listaMensajes = document.getElementById('mensajes');
-    const img = document.createElement('img');
-    img.setAttribute('src', 'uploads/' + msg);
-    img.setAttribute('class', 'emojis');
-    listaMensajes.appendChild(img);
+  socket.on('usuarios', (usuarios) => {
+    const user = auth.currentUser;
+    console.log(usuarios);
+    const listaUsuarios = document.getElementById('lista-usuarios');
+    listaUsuarios.innerHTML = '';
+
+    usuarios.forEach((usuario) => {
+      // Crear los elementos
+      let boxContato = document.createElement('div');
+      let img = document.createElement('img');
+      let ifoUsuario = document.createElement('div');
+      let nomeUsuario = document.createElement('p');
+      let previewMenssage = document.createElement('p');
+      let infoMenssage = document.createElement('div');
+      let horario = document.createElement('p');
+
+      // Añadir las clases a los elementos
+      boxContato.classList.add('boxContato');
+      img.classList.add('fotoUsuario');
+      ifoUsuario.classList.add('ifoUsuario');
+      nomeUsuario.classList.add('nomeUsuario');
+      previewMenssage.classList.add('previewMenssage');
+      infoMenssage.classList.add('infoMenssage');
+      horario.classList.add('horario');
+
+      // Añadir los atributos a los elementos
+      inputavatar = document.getElementById('elegirAvatar');
+      img.setAttribute('src', usuario.avatar);
+
+
+      img.setAttribute('alt', 'Imagem do avatar 2');
+
+      ifoUsuario.setAttribute('onclick', `entrarSalaPrivada(${JSON.stringify(usuario)})`);
+      // Añadir el texto a los elementos
+      nomeUsuario.textContent = usuario.nick;
+      previewMenssage.textContent = '¡Bienvenido!';
+      horario.textContent = '20:44';
+
+      // Añadir los elementos al DOM
+      boxContato.appendChild(img);
+      ifoUsuario.appendChild(nomeUsuario);
+      ifoUsuario.appendChild(previewMenssage);
+      infoMenssage.appendChild(horario);
+      boxContato.appendChild(ifoUsuario);
+      boxContato.appendChild(infoMenssage);
+
+      // Añadir el elemento principal a la lista de usuarios
+      listaUsuarios.appendChild(boxContato);
+    });
+  });
+
+
+  function iniciarSesionGoogle() {
+    const provider = new firebase.auth.GoogleAuthProvider();
+    auth.signInWithPopup(provider)
+    .then((result) => {
+      const user = result.user;
+      let nick = user.displayName;
+      configurarUsuario(user);
+    })
+    .catch((error) => {
+      console.log(error);
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      // The email of the user's account used.
+      const email = error.customData.email;
+      // The AuthCredential type that was used.
+      if (error.code === 'auth/account-exists-with-different-credential') {
+        errorPorCorreoExisitente.textContent = 'Ya existe un usuario con la misma dirección de correo electrónico pero con diferentes credenciales de inicio de sesión.';
+      }
+    });
   }
 
-socket.on('usuarios', (usuarios) => {
-  const user = auth.currentUser;
-  console.log(usuarios);
-  const listaUsuarios = document.getElementById('lista-usuarios');
-  listaUsuarios.innerHTML = '';
+  function iniciarSesionGitHub() {
+    const provider = new firebase.auth.GithubAuthProvider();
+    auth.signInWithPopup(provider)
+    .then((result) => {
+      const user = result.user;
+      let nick = user.displayName;
+      configurarUsuario(user);
+    })
+    .catch((error) => {
+      console.log(error);
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      // The email of the user's account used.
+      const email = error.customData.email;
+      // The AuthCredential type that was used.
+      if (error.code === 'auth/account-exists-with-different-credential') {
+        errorPorCorreoExisitente.textContent = 'Ya existe un usuario con la misma dirección de correo electrónico pero con diferentes credenciales de inicio de sesión.';
+      }
+    }) ;
+  }
 
-  usuarios.forEach((usuario) => {
-    console.log(usuario);
-    // Crear los elementos
-    let boxContato = document.createElement('div');
-    let img = document.createElement('img');
-    let ifoUsuario = document.createElement('div');
-    let nomeUsuario = document.createElement('p');
-    let previewMenssage = document.createElement('p');
-    let infoMenssage = document.createElement('div');
-    let horario = document.createElement('p');
-    let menssagePendente = document.createElement('p');
+  function iniciarSesionFacebook() {
+    const provider = new firebase.auth.FacebookAuthProvider();
+    auth.signInWithPopup(provider)
+    .then((result) => {
+      const user = result.user;
+      let nick = user.displayName;
+      configurarUsuario(user);
+    })
+    .catch((error) => {
+      console.log(error);
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      // The email of the user's account used.
+      const email = error.customData.email;
+      // The AuthCredential type that was used.
+      if (error.code === 'auth/account-exists-with-different-credential') {
+        errorPorCorreoExisitente.textContent = 'Ya existe un usuario con la misma dirección de correo electrónico pero con diferentes credenciales de inicio de sesión.';
+      }
+    })
+    ;
+  }
 
-    // Añadir las clases a los elementos
-    boxContato.classList.add('boxContato');
-    img.classList.add('fotoUsuario');
-    ifoUsuario.classList.add('ifoUsuario');
-    nomeUsuario.classList.add('nomeUsuario');
-    previewMenssage.classList.add('previewMenssage');
-    infoMenssage.classList.add('infoMenssage');
-    horario.classList.add('horario');
-    menssagePendente.classList.add('menssagePendente');
+  function iniciarSesion(){
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+    auth.signInWithEmailAndPassword(email, password)
+    .then((userCredential) => {
+      const user = userCredential.user;
+      configurarUsuario(user);
+    })
+    .catch((error) => {
+      console.log(error);
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      // The email of the user's account used.
+      const email = error.customData.email;
+      // The AuthCredential type that was used.
+      if (error.code === 'auth/account-exists-with-different-credential') {
+        errorPorCorreoExisitente.textContent = 'Ya existe un usuario con la misma dirección de correo electrónico pero con diferentes credenciales de inicio de sesión.';
+      }
+    });
+  }
 
-    // Añadir los atributos a los elementos
-    inputavatar = document.getElementById('elegirAvatar');
-    img.setAttribute('src', usuario.avatar);
-
-
-    img.setAttribute('alt', 'Imagem do avatar 2');
-
-    ifoUsuario.setAttribute('onclick', `entrarSalaPrivada(${JSON.stringify(usuario)})`);
-    // Añadir el texto a los elementos
-    nomeUsuario.textContent = usuario.nick;
-    previewMenssage.textContent = '-';
-    horario.textContent = '20:44';
-    menssagePendente.textContent = '3';
-
-    // Añadir los elementos al DOM
-    boxContato.appendChild(img);
-    ifoUsuario.appendChild(nomeUsuario);
-    ifoUsuario.appendChild(previewMenssage);
-    infoMenssage.appendChild(horario);
-    infoMenssage.appendChild(menssagePendente);
-    boxContato.appendChild(ifoUsuario);
-    boxContato.appendChild(infoMenssage);
-
-    // Añadir el elemento principal a la lista de usuarios
-    listaUsuarios.appendChild(boxContato);
-  });
-});
-
-
-function iniciarSesionGoogle() {
-  const provider = new firebase.auth.GoogleAuthProvider();
-  auth.signInWithPopup(provider)
-  .then((result) => {
-    const user = result.user;
-    let nick = user.displayName;
-    configurarUsuario(user);
-  })
-  .catch((error) => {
-    console.log(error);
-    const errorCode = error.code;
-    const errorMessage = error.message;
-    // The email of the user's account used.
-    const email = error.customData.email;
-    // The AuthCredential type that was used.
-    if (error.code === 'auth/account-exists-with-different-credential') {
-      errorPorCorreoExisitente.textContent = 'Ya existe un usuario con la misma dirección de correo electrónico pero con diferentes credenciales de inicio de sesión.';
-    }
-  });
-}
-
-function iniciarSesionGitHub() {
-  const provider = new firebase.auth.GithubAuthProvider();
-  auth.signInWithPopup(provider)
-  .then((result) => {
-    const user = result.user;
-    let nick = user.displayName;
-    configurarUsuario(user);
-  })
-  .catch((error) => {
-    console.log(error);
-    const errorCode = error.code;
-    const errorMessage = error.message;
-    // The email of the user's account used.
-    const email = error.customData.email;
-    // The AuthCredential type that was used.
-    if (error.code === 'auth/account-exists-with-different-credential') {
-      errorPorCorreoExisitente.textContent = 'Ya existe un usuario con la misma dirección de correo electrónico pero con diferentes credenciales de inicio de sesión.';
-    }
-  }) ;
-}
-
-function iniciarSesionFacebook() {
-  const provider = new firebase.auth.FacebookAuthProvider();
-  auth.signInWithPopup(provider)
-  .then((result) => {
-    const user = result.user;
-    let nick = user.displayName;
-    configurarUsuario(user);
-  })
-  .catch((error) => {
-    console.log(error);
-    const errorCode = error.code;
-    const errorMessage = error.message;
-    // The email of the user's account used.
-    const email = error.customData.email;
-    // The AuthCredential type that was used.
-    if (error.code === 'auth/account-exists-with-different-credential') {
-      errorPorCorreoExisitente.textContent = 'Ya existe un usuario con la misma dirección de correo electrónico pero con diferentes credenciales de inicio de sesión.';
-    }
-  })
-  ;
-}
-
-function iniciarSesion(){
-  const email = document.getElementById('email').value;
-  const password = document.getElementById('password').value;
-  auth.signInWithEmailAndPassword(email, password)
-  .then((userCredential) => {
-    const user = userCredential.user;
-    configurarUsuario(user);
-  })
-  .catch((error) => {
-    console.log(error);
-    const errorCode = error.code;
-    const errorMessage = error.message;
-    // The email of the user's account used.
-    const email = error.customData.email;
-    // The AuthCredential type that was used.
-    if (error.code === 'auth/account-exists-with-different-credential') {
-      errorPorCorreoExisitente.textContent = 'Ya existe un usuario con la misma dirección de correo electrónico pero con diferentes credenciales de inicio de sesión.';
-    }
-  });
-}
-
-function registrarse(){
-  const nombre = document.getElementById('nombre').value;
-  const email = document.getElementById('email-registro').value;
-  const password = document.getElementById('password-registro').value;
-  auth.createUserWithEmailAndPassword(email, password)
-  .then((userCredential) => {
-    return userCredential.user.updateProfile({
-      displayName: nombre
-    }).then(() => userCredential.user);
-  })
-  .then((user) => {
-    console.log(user);
-    configurarUsuario(user);
-  })
-  .catch((error) => {
-    const errorCode = error.code;
-    const errorMessage = error.message;
-    // The email of the user's account used.
-    const email = error.customData.email;
-    // The AuthCredential type that was used.
-    if (error.code === 'auth/account-exists-with-different-credential') {
-      errorPorCorreoExisitente.textContent = 'Ya existe un usuario con la misma dirección de correo electrónico pero con diferentes credenciales de inicio de sesión.';
-    }
-    console.log(error);
-  });
-}
+  function registrarse(){
+    const nombre = document.getElementById('nombre').value;
+    const email = document.getElementById('email-registro').value;
+    const password = document.getElementById('password-registro').value;
+    auth.createUserWithEmailAndPassword(email, password)
+    .then((userCredential) => {
+      return userCredential.user.updateProfile({
+        displayName: nombre
+      }).then(() => userCredential.user);
+    })
+    .then((user) => {
+      console.log(user);
+      configurarUsuario(user);
+    })
+    .catch((error) => {
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      // The email of the user's account used.
+      const email = error.customData.email;
+      // The AuthCredential type that was used.
+      if (error.code === 'auth/account-exists-with-different-credential') {
+        errorPorCorreoExisitente.textContent = 'Ya existe un usuario con la misma dirección de correo electrónico pero con diferentes credenciales de inicio de sesión.';
+      }
+      console.log(error);
+    });
+  }
 
 
 function configurarUsuario(user){
