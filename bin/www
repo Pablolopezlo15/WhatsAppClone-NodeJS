@@ -90,7 +90,7 @@ io.on('connection', (socket) => {
       socket.emit('error', 'No files were uploaded.');
       return;
     }
-    uploadPath = __dirname + '/public/archivosComp/' + datos.mensaje;
+    uploadPath = __dirname + '/archivosComp/' + datos.mensaje;
     console.log(datos.mensaje);
     socket.broadcast.emit('archivoCompartido', datos);
   });
