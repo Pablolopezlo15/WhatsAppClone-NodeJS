@@ -195,7 +195,6 @@ function entrarSalaPrivada(usuario) {
   enviarmensajeprivado.setAttribute('onclick', `enviarPrivado('${usuario.id}')`);
   
   usuarioIDContainer.style.display = 'block';
-  // chatMensajes.appendChild(usuarioIDContainer);
 
   socket.emit('entrarRoom', usuario.id);
 }
@@ -203,7 +202,6 @@ function entrarSalaPrivada(usuario) {
 function enviarPrivado(usuarioID) {
   const listaMensajes = document.getElementById('mensajes-'+usuarioID);
   const input = document.getElementById('mensajePrivado');
-  // socket.emit('mensajePrivado', { mensaje: input.value, room: usuarioID });
   socket.emit('mensajePrivado', { mensaje: input.value, receptorID: usuarioID });
   const nuevoMensaje = document.createElement('li');
   nuevoMensaje.setAttribute('class', 'destinMenssage');
@@ -280,6 +278,7 @@ function recibir() {
     mensajeRecibido.setAttribute('class', 'remetenteMenssage');
 
     socket.on('mensaje', (msg) => {
+      //Maqueto el mensaje que llega
       console.log(msg);
       const mensajeRecibido = document.createElement('li');
       mensajeRecibido.setAttribute('class', 'remetenteMenssage');
@@ -316,6 +315,7 @@ function recibir() {
     });
 
     socket.on('mensajeEnRoom', (msg) => {
+      //Maqueto el mensaje que llega
       console.log(msg);
       let sala = msg.room;
       const mensajeRecibido = document.createElement('li');
@@ -334,13 +334,11 @@ function recibir() {
       const hora = document.createElement('p');
       hora.textContent = msg.hora;
     
-      // Agregar elementos al mensaje recibido
       contenidoMensaje.appendChild(nick);
       contenidoMensaje.appendChild(mensaje);
       contenidoMensaje.appendChild(hora);
       mensajeRecibido.appendChild(contenidoMensaje);
     
-      // Agregar mensaje recibido a la lista de mensajes
       const listaMensajes = document.getElementById('mensajes-'+sala);
       listaMensajes.appendChild(mensajeRecibido);
 
@@ -354,6 +352,7 @@ function recibir() {
         return;
       }
       console.log(datos);
+      //Maqueto el mensaje que llega
 
       const mensajeRecibido = document.createElement('li');
       mensajeRecibido.setAttribute('class', 'remetenteMenssage');
@@ -372,13 +371,11 @@ function recibir() {
       const hora = document.createElement('p');
       hora.textContent = datos.hora;
     
-      // Agregar elementos al mensaje recibido
       contenidoMensaje.appendChild(nick);
       contenidoMensaje.appendChild(mensaje);
       contenidoMensaje.appendChild(hora);
       mensajeRecibido.appendChild(contenidoMensaje);
     
-      // Agregar mensaje recibido a la lista de mensajes
       const listaMensajes = document.getElementById('mensajes-' + datos.receptor.id);
       listaMensajes.appendChild(mensajeRecibido);
     
@@ -742,16 +739,16 @@ function configurarUsuario(user){
     }
     actualizarPerfilChat(user, nick, avatar, miImagen);
   } else {
+    //Actualizo los datos en firebase
     let file = inputavatar.files[0];
     let storageRef = firebase.storage().ref('avatars/' + file.name);
     let uploadTask = storageRef.put(file);
 
     uploadTask.on('state_changed', function(snapshot){
-      // Puedes usar este bloque para mostrar el progreso de la subida
     }, function(error) {
-      // Manejar errores de subida
       console.log(error);
     }, function() {
+
       // Cuando la subida se completa, obtener la URL de la imagen y actualizar el perfil del usuario
       uploadTask.snapshot.ref.getDownloadURL().then(function(downloadURL) {
         avatar = downloadURL;
@@ -761,7 +758,6 @@ function configurarUsuario(user){
           // Actualizar el perfil del usuario en el chat
           actualizarPerfilChat(user, nick, avatar, miImagen);
         }).catch(function(error) {
-          // Manejar errores
           console.log(error);
         });
       });

@@ -27,6 +27,7 @@ const io = new Server(server, {
     methods: ['GET', 'POST']
   }
 });
+
 var users = 0;
 var usuarios = [];
 var room;
@@ -127,13 +128,9 @@ io.on('connection', (socket) => {
     }
   });
 
-  // Cuando un usuario envía un mensaje privado
   socket.on("mensajePrivado", ({ receptorID, mensaje }) => {
-    // Buscamos al usuario que envía el mensaje
     const emisor = usuarios.find((usuario) => usuario.id === socket.id);
-    // Buscamos al usuario que recibe el mensaje
     const receptor = usuarios.find((usuario) => usuario.id === receptorID);
-    // Si el emisor y el receptor existen
 
     let salas = [];
     socket.rooms.forEach(room => {
