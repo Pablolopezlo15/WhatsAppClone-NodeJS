@@ -85,15 +85,14 @@ io.on('connection', (socket) => {
     }
   });
 
-  socket.on('archivoCompartido', (archivo) => { 
-    if (!archivo) {
+  socket.on('archivoCompartido', (datos) => { 
+    if (!datos.mensaje) {
       socket.emit('error', 'No files were uploaded.');
       return;
     }
-    uploadPath = __dirname + '/public/archivosComp/' + archivo;
-    console.log(archivo);
-    // socket.archivo = archivo;
-    socket.broadcast.emit('archivoCompartido', archivo);
+    uploadPath = __dirname + '/public/archivosComp/' + datos.mensaje;
+    console.log(datos.mensaje);
+    socket.broadcast.emit('archivoCompartido', datos);
   });
 
   socket.on('escribiendo', (nick) => {

@@ -42,6 +42,7 @@ ul {
 .fotoUsuarioMensaje {
     position: absolute;
     width: 29px;
+    height: 29px;
     border-radius: 50%;
     margin-left: -52px;
     margin-bottom: 53px;
@@ -164,8 +165,18 @@ ul {
 
 .boxContato .fotoUsuario{
     width: 50px;
+    height: 50px;
 }
-
+.imagenMensaje{
+    width: 100%;
+    max-width: 450px;
+}
+.archivoCompartido{
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-direction: column-reverse;
+}
 .ifoUsuario {
     margin-left: 15px;
     padding-top: 10px;
@@ -303,7 +314,8 @@ ul {
     flex-direction: column;
     gap: 0.5rem;
     max-height: 80vh;
-    padding: 1vw 5vw;
+    padding: 0vw 5vw;
+    margin-bottom: 0.5rem;
     overflow-x: visible;
     overflow-y: scroll;
     scroll-behavior: smooth;

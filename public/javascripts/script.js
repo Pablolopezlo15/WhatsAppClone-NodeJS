@@ -218,10 +218,22 @@ function enviarPrivado(usuarioID) {
 
 
 const input = document.getElementById('mensaje');
+const mensajesala1 = document.getElementById('mensajesala1');
+const mensajesala2 = document.getElementById('mensajesala2');
 input.addEventListener('keyup', (e) => {
     if (e.key === 'Enter') {
       enviar();
     }
+});
+mensajesala1.addEventListener('keyup', (e) => {
+  if (e.key === 'Enter') {
+    enviarRoom();
+  }
+});
+mensajesala2.addEventListener('keyup', (e) => {
+  if (e.key === 'Enter') {
+    enviarRoom();
+  }
 });
 
 
@@ -296,10 +308,6 @@ function recibir() {
       hora.textContent = msg.hora;
       datosMensaje.appendChild(hora);
 
-      // const archivo = document.createElement('img');
-      // archivo.setAttribute('src', msg.archivo);
-      // archivo.textContent = msg.archivo;
-      // mensajeRecibido.appendChild(archivo);
 
       listaMensajes.appendChild(mensajeRecibido);
 
@@ -312,7 +320,6 @@ function recibir() {
       let sala = msg.room;
       const mensajeRecibido = document.createElement('li');
       mensajeRecibido.setAttribute('class', 'remetenteMenssage');
-      // Crear elementos HTML para mostrar el mensaje
     
       const contenidoMensaje = document.createElement('div');
       contenidoMensaje.classList.add('contenido-mensaje');
@@ -334,7 +341,7 @@ function recibir() {
       mensajeRecibido.appendChild(contenidoMensaje);
     
       // Agregar mensaje recibido a la lista de mensajes
-      const listaMensajes = document.getElementById('mensajes-'+sala); // Asegúrate de tener una lista de mensajes específica para cada sala
+      const listaMensajes = document.getElementById('mensajes-'+sala);
       listaMensajes.appendChild(mensajeRecibido);
 
       // Desplazar la lista de mensajes al final
@@ -397,13 +404,57 @@ function recibir() {
       listaMensajes.appendChild(mensajeRecibido);
     });
 
-    socket.on('archivoCompartido', (msg) => {
-      console.log(msg);
+    socket.on('archivoCompartido', (datos) => {
+      console.log(datos);
       const listaMensajes = document.getElementById('mensajes');
-      const archivo = document.createElement('a');
-      archivo.setAttribute('href', 'uploads/' + msg);
-      archivo.textContent = msg;
-      listaMensajes.appendChild(archivo);
+    
+      const mensajeRecibido = document.createElement('li');
+      mensajeRecibido.setAttribute('class', 'remetenteMenssage');
+    
+      const mensaje = document.createElement('p');
+      mensaje.setAttribute('class', 'archivoCompartido');
+      if (datos.mensaje.includes('.png') || datos.mensaje.includes('.jpg') || datos.mensaje.includes('.jpeg') || datos.mensaje.includes('.gif')) {
+        const img = document.createElement('img');
+        img.setAttribute('src', 'archivosComp/' + datos.mensaje);
+        img.setAttribute('class', 'imagenMensaje');
+
+        descargar = document.createElement('a');
+        descargar.setAttribute('href', 'archivosComp/' + datos.mensaje);
+        descargar.setAttribute('download', '');
+        descargar.textContent = 'Descargar';
+        mensaje.appendChild(descargar);
+        mensaje.appendChild(img);
+      } else {
+        const archivo = document.createElement('a');
+        archivo.setAttribute('href', 'archivosComp/' + datos.mensaje);
+        archivo.setAttribute('target', '_blank');
+        archivo.textContent = datos.mensaje;
+        mensaje.appendChild(archivo);
+      }
+      mensajeRecibido.appendChild(mensaje);
+    
+      const datosMensaje = document.createElement('div');
+      datosMensaje.setAttribute('class', 'datos-mensaje');
+      mensajeRecibido.appendChild(datosMensaje);
+    
+      const avatar = document.createElement('img');
+      avatar.setAttribute('src', datos.avatar);
+      avatar.setAttribute('class', 'fotoUsuarioMensaje');
+      datosMensaje.appendChild(avatar);
+    
+      const nick = document.createElement('p');
+      nick.setAttribute('class', 'nick');
+      nick.textContent = datos.nick;
+      datosMensaje.appendChild(nick);
+    
+      const hora = document.createElement('p');
+      hora.textContent = datos.hora;
+      datosMensaje.appendChild(hora);
+    
+      listaMensajes.appendChild(mensajeRecibido);
+    
+      let mensajesbox = document.querySelector('.mensajesbox');
+      mensajesbox.scrollTop = mensajesbox.scrollHeight;
     });
 
     socket.on('error', (msg) => {
@@ -415,8 +466,8 @@ function recibir() {
 
 const subirAvatar = document.getElementById('subirAvatar');
   const elegirAvatar = document.getElementById('elegirAvatar');
-  const endpoint = 'http://localhost:3000/upload';
-  // const endpoint = 'https://whatsappclone-nodejs.onrender.com/upload';
+  // const endpoint = 'http://localhost:3000/upload';
+  const endpoint = 'https://whatsappclone-nodejs.onrender.com/upload';
   subirAvatar.addEventListener('click', () => {
     const file = elegirAvatar.files[0];
     const formData = new FormData();
@@ -440,19 +491,68 @@ const subirAvatar = document.getElementById('subirAvatar');
 
   function compartirArchivo() {
     const input = document.getElementById('fichero');
+    
+    if (input.files.length === 0) {
+      console.log('No file selected');
+      return;
+    }
+  
     const file = input.files[0];
     const formData = new FormData();
     formData.append('fichero', file);
-  
-    fetch('http://localhost:3000/uploadArchivo', {
+    const endpoint = 'https://whatsappclone-nodejs.onrender.com/uploadArchivo';
+    // const endpoint = 'http://localhost:3000/uploadArchivo';
+    fetch(endpoint, {
       method: 'POST',
       body: formData
     })
     .then(response => response)
     .then(data => {
       console.log(file.name);
-      socket.emit('archivoCompartido', file.name);
+      const datos = {
+        nick: auth.currentUser.displayName,
+        avatar: auth.currentUser.photoURL,
+        mensaje: file.name,
+        hora: new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' }),
+        room: salaActual
+      };
+      socket.emit('archivoCompartido', datos);
       input.value = '';
+
+      //Maqueto el archivo
+      const listaMensajes = document.getElementById('mensajes');
+      const mensajeEnviado = document.createElement('li');
+      mensajeEnviado.setAttribute('class', 'destinMenssage');
+  
+      const mensaje = document.createElement('p');
+      mensaje.setAttribute('class', 'archivoCompartido');
+      if (datos.mensaje.includes('.png') || datos.mensaje.includes('.jpg') || datos.mensaje.includes('.jpeg') || datos.mensaje.includes('.gif')) {
+        const img = document.createElement('img');
+        img.setAttribute('src', 'archivosComp/' + datos.mensaje);
+        img.setAttribute('class', 'imagenMensaje');
+        mensaje.appendChild(img);
+      } else {
+        const archivo = document.createElement('a');
+        archivo.setAttribute('href', 'archivosComp/' + datos.mensaje);
+        archivo.setAttribute('download', '');
+        archivo.setAttribute('target', '_blank');
+        archivo.textContent = datos.mensaje;
+        mensaje.appendChild(archivo);
+      }
+      mensajeEnviado.appendChild(mensaje);
+  
+      const datosMensaje = document.createElement('div');
+      datosMensaje.setAttribute('class', 'datos-mensaje');
+      mensajeEnviado.appendChild(datosMensaje);
+  
+      const hora = document.createElement('p');
+      hora.textContent = datos.hora;
+      datosMensaje.appendChild(hora);
+  
+      listaMensajes.appendChild(mensajeEnviado);
+  
+      let mensajesbox = document.querySelector('.mensajesbox');
+      mensajesbox.scrollTop = mensajesbox.scrollHeight;
     })
     .catch(error => {
       console.error(error);
