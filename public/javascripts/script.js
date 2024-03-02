@@ -523,7 +523,7 @@ const subirAvatar = document.getElementById('subirAvatar');
   
       const mensaje = document.createElement('p');
       mensaje.setAttribute('class', 'archivoCompartido');
-      if (datos.mensaje.includes('.png') || datos.mensaje.includes('.jpg') || datos.mensaje.includes('.jpeg') || datos.mensaje.includes('.gif')) {
+      if (datos.mensaje.includes('.png') || datos.mensaje.includes('.jpg') || datos.mensaje.includes('.jpeg') || datos.mensaje.includes('.gif') || datos.mensaje.includes('.webp')){
         const img = document.createElement('img');
         img.setAttribute('src', 'archivosComp/' + datos.mensaje);
         img.setAttribute('class', 'imagenMensaje');
